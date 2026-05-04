@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+@theme {
+  --color-base-primary: #0b0f19;
+  --color-base-secondary: #151a28;
+  --color-content-primary: #ffffff;
+  --color-content-secondary: #8b949e;
+  --color-accent-blue: #3b82f6;
+  --color-accent-red: #ef4444;
+  --color-border-soft: #1f2937;
+  --font-sans: "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-base-primary text-content-primary font-sans antialiased m-0 p-0;
+  }
+}
