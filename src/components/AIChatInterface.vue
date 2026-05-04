@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
-import { Send, Bot, User, Sparkles, X, MessageSquare } from 'lucide-vue-next'
+import { Send, Bot, User, Sparkles, X, MessageSquare, Mic, Loader2 } from 'lucide-vue-next'
 import { useMQTT } from '../composables/useMQTT'
 
 const { currentTemperature, currentHumidity, currentHeatIndex } = useMQTT()
@@ -23,6 +23,66 @@ const scrollToBottom = async () => {
   await nextTick()
   if (chatContainer.value) {
     chatContainer.value.scrollTop = chatContainer.value.scrollHeight
+  }
+}
+
+const isRecording = ref(false)
+const isTranscribing = ref(false)
+let mediaRecorder = null
+let audioChunks = []
+
+const toggleRecording = async () => {
+  if (isRecording.value) {
+    mediaRecorder.stop()
+    isRecording.value = false
+    return
+  }
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+    mediaRecorder = new MediaRecorder(stream)
+    audioChunks = []
+
+    mediaRecorder.ondataavailable = (e) => {
+      if (e.data.size > 0) audioChunks.push(e.data)
+    }
+
+    mediaRecorder.onstop = async () => {
+      stream.getTracks().forEach(track => track.stop())
+      isTranscribing.value = true
+      
+      const audioBlob = new Blob(audioChunks, { type: 'audio/webm' })
+      const file = new File([audioBlob], 'recording.webm', { type: 'audio/webm' })
+      
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('model', 'whisper-large-v3')
+
+      try {
+        const response = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`
+          },
+          body: formData
+        })
+        
+        if (!response.ok) throw new Error('Transcription failed')
+        const data = await response.json()
+        inputMessage.value += (inputMessage.value ? ' ' : '') + data.text.trim()
+      } catch (err) {
+        console.error('Transcription error:', err)
+        alert('Failed to transcribe audio. Please check your microphone or API key.')
+      } finally {
+        isTranscribing.value = false
+      }
+    }
+
+    mediaRecorder.start()
+    isRecording.value = true
+  } catch (err) {
+    console.error('Microphone access denied', err)
+    alert('Please allow microphone permissions to use voice chat.')
   }
 }
 
@@ -124,7 +184,7 @@ onMounted(() => {
     >
       <div 
         v-if="isOpen" 
-        class="bg-base-secondary rounded-2xl border border-border-soft flex flex-col shadow-2xl overflow-hidden mb-4 w-[90vw] sm:w-[400px] h-[500px] max-h-[80vh]"
+        class="bg-base-secondary rounded-2xl border border-border-soft flex flex-col shadow-2xl overflow-hidden mb-4 w-[95vw] sm:w-[450px] md:w-[500px] h-[75vh] sm:h-[650px] md:h-[750px] max-h-[85vh] sm:max-h-[90vh] transition-all"
       >
         <!-- Chat Header -->
         <div class="px-6 py-4 border-b border-border-soft flex items-center justify-between bg-base-secondary">
@@ -194,16 +254,29 @@ onMounted(() => {
             <input 
               v-model="inputMessage"
               type="text" 
-              placeholder="Ask for risk predictions..."
-              class="w-full bg-base-primary border border-border-soft rounded-full pl-5 pr-12 py-3 text-sm text-content-primary placeholder-content-secondary focus:outline-none focus:border-[var(--color-accent-blue)] focus:ring-1 focus:ring-[var(--color-accent-blue)] transition-all"
+              :placeholder="isRecording ? 'Listening...' : (isTranscribing ? 'Transcribing...' : 'Ask AI...')"
+              :disabled="isRecording || isTranscribing"
+              class="w-full bg-base-primary border border-border-soft rounded-full pl-5 pr-20 py-3 text-sm text-content-primary placeholder-content-secondary focus:outline-none focus:border-[var(--color-accent-blue)] focus:ring-1 focus:ring-[var(--color-accent-blue)] transition-all disabled:opacity-70"
             />
-            <button 
-              type="submit"
-              :disabled="!inputMessage.trim() || isTyping"
-              class="absolute right-2 p-2 bg-[var(--color-accent-blue)] text-white rounded-full hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Send class="w-4 h-4" />
-            </button>
+            <div class="absolute right-2 flex items-center space-x-1">
+              <button 
+                type="button"
+                @click="toggleRecording"
+                :disabled="isTranscribing || isTyping"
+                class="p-1.5 rounded-full transition-colors disabled:opacity-50 flex items-center justify-center"
+                :class="isRecording ? 'bg-[var(--color-accent-red)] text-white animate-pulse' : 'bg-transparent text-content-secondary hover:text-[var(--color-accent-blue)]'"
+              >
+                <Loader2 v-if="isTranscribing" class="w-4 h-4 animate-spin" />
+                <Mic v-else class="w-4 h-4" />
+              </button>
+              <button 
+                type="submit"
+                :disabled="!inputMessage.trim() || isTyping || isRecording || isTranscribing"
+                class="p-2 bg-[var(--color-accent-blue)] text-white rounded-full hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              >
+                <Send class="w-4 h-4" />
+              </button>
+            </div>
           </form>
         </div>
       </div>
