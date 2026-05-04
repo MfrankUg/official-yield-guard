@@ -2,13 +2,12 @@
 import { computed } from 'vue'
 import MetricCard from '../components/MetricCard.vue'
 import ConditionChart from '../components/ConditionChart.vue'
-import { Thermometer, Droplet, Flame } from 'lucide-vue-next'
+import { Thermometer, Droplet } from 'lucide-vue-next'
 import { useMQTT } from '../composables/useMQTT'
 
 const { 
   currentTemperature, 
   currentHumidity, 
-  currentHeatIndex,
   historicalDataPoints
 } = useMQTT()
 
@@ -49,9 +48,6 @@ const tempMax24 = computed(() => currentTemperature.value !== null ? Math.ceil(c
 const humMin24 = computed(() => currentHumidity.value !== null ? Math.floor(currentHumidity.value - 10) : '--')
 const humMax24 = computed(() => currentHumidity.value !== null ? Math.ceil(currentHumidity.value + 10) : '--')
 
-const heatMin24 = computed(() => currentHeatIndex.value !== null ? Math.floor(currentHeatIndex.value - 5) : '--')
-const heatMax24 = computed(() => currentHeatIndex.value !== null ? Math.ceil(currentHeatIndex.value + 5) : '--')
-
 </script>
 
 <template>
@@ -79,15 +75,6 @@ const heatMax24 = computed(() => currentHeatIndex.value !== null ? Math.ceil(cur
           :min24h="humMin24"
           :max24h="humMax24"
           colorClass="bg-[var(--color-accent-red)]"
-        />
-        <MetricCard 
-          title="Heat Index"
-          :icon="Flame"
-          :value="currentHeatIndex"
-          unit="°C"
-          :min24h="heatMin24"
-          :max24h="heatMax24"
-          colorClass="bg-orange-500"
         />
       </div>
 

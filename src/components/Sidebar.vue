@@ -62,16 +62,15 @@ const navItems = [
       </router-link>
     </nav>
     
-    <!-- Optional Footer snippet -->
+    <!-- Footer: Auth Options -->
     <div class="p-6 border-t border-border-soft shrink-0">
-      <div class="flex items-center">
-        <div class="w-8 h-8 rounded-full bg-[var(--color-accent-blue)] flex items-center justify-center text-white font-bold text-sm">
-          FM
-        </div>
-        <div class="ml-3">
-          <p class="text-sm font-medium text-content-primary">Frank Muhindo</p>
-          <p class="text-xs text-content-secondary">Admin</p>
-        </div>
+      <div class="flex flex-col space-y-3">
+        <button class="w-full py-2.5 bg-[var(--color-accent-blue)] text-white rounded-xl text-sm font-medium hover:bg-blue-600 transition-colors shadow-sm">
+          Login
+        </button>
+        <button class="w-full py-2.5 bg-base-primary border border-border-soft text-content-primary rounded-xl text-sm font-medium hover:bg-white/5 transition-colors">
+          Sign Up
+        </button>
       </div>
     </div>
   </aside>

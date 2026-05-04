@@ -1,16 +1,19 @@
 import { ref } from 'vue'
 import mqtt from 'mqtt'
 
+// Singleton state: moved outside the composable so all components share the exact same reactive refs
+const currentTemperature = ref(null)
+const currentHumidity = ref(null)
+const currentHeatIndex = ref(null)
+const isConnected = ref(false)
+const connectionError = ref(null)
+
+const historicalDataPoints = ref([])
+
+let client = null
+let lastUpdateTime = 0
+
 export function useMQTT() {
-  const currentTemperature = ref(null)
-  const currentHumidity = ref(null)
-  const currentHeatIndex = ref(null)
-  const isConnected = ref(false)
-  const connectionError = ref(null)
-
-  const historicalDataPoints = ref([])
-
-  let client = null
 
   const connect = () => {
     const brokerUrl = 'wss://392a25b9fbf4427da0a7b361620a2a2a.s1.eu.hivemq.cloud:8884/mqtt'
@@ -76,7 +79,6 @@ export function useMQTT() {
   }
 
   // Helper to throttle history updates to not spam the chart
-  let lastUpdateTime = 0
   const updateHistory = (temp, humidity) => {
     const time = Date.now()
     if (time - lastUpdateTime > 60000) { // Update history max once per minute
