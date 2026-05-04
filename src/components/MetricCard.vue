@@ -56,7 +56,10 @@ const percentage = computed(() => {
         <h3 class="text-content-secondary font-medium">{{ title }}</h3>
       </div>
       <div class="flex items-center space-x-2">
-        <AlertTriangle v-if="warning" class="w-5 h-5 text-[var(--color-accent-red)] animate-pulse" />
+        <div v-if="warning" class="flex items-center space-x-1 text-[var(--color-accent-red)] animate-pulse bg-[var(--color-accent-red)]/10 px-2 py-1 rounded-md border border-[var(--color-accent-red)]/20">
+          <AlertTriangle class="w-3.5 h-3.5" />
+          <span class="text-[10px] uppercase tracking-wider font-semibold">Warning</span>
+        </div>
         <div class="text-[10px] uppercase tracking-wider font-semibold text-content-secondary px-2 py-1 bg-base-primary rounded-md border border-border-soft">
           Live
         </div>
