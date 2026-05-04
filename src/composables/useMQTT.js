@@ -9,9 +9,17 @@ const isConnected = ref(false)
 const connectionError = ref(null)
 
 const historicalDataPoints = ref([])
+const notifications = ref([])
+const unreadCount = ref(0)
+let lastStatus = 'Optimal'
 
 let client = null
 let lastUpdateTime = 0
+
+// Request browser notification permission
+if ('Notification' in window && Notification.permission === 'default') {
+  Notification.requestPermission()
+}
 
 export function useMQTT() {
 
@@ -46,6 +54,36 @@ export function useMQTT() {
             }
             if (parsedData.heatIndex !== undefined) {
               currentHeatIndex.value = parsedData.heatIndex
+            }
+            
+            // Handle Notifications based on the 'status' field
+            if (parsedData.status && parsedData.status !== lastStatus) {
+              lastStatus = parsedData.status
+              
+              if (parsedData.status !== 'Optimal') {
+                const alertMsg = `Alert: ${parsedData.status}`
+                
+                // Add to internal list
+                notifications.value.unshift({
+                  id: Date.now(),
+                  message: alertMsg,
+                  time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                })
+                unreadCount.value++
+
+                // Keep only the last 20 notifications
+                if (notifications.value.length > 20) {
+                  notifications.value.pop()
+                }
+
+                // Trigger Browser Push Notification
+                if ('Notification' in window && Notification.permission === 'granted') {
+                  new Notification('Yield Guard Alert', {
+                    body: alertMsg,
+                    icon: '/favicon.ico'
+                  })
+                }
+              }
             }
             
             // Only update history if we have valid values
@@ -101,6 +139,16 @@ export function useMQTT() {
     }
   }
 
+  const clearNotifications = () => {
+    notifications.value = []
+    unreadCount.value = 0
+    lastStatus = 'Optimal' // Reset status so it can trigger again if needed
+  }
+
+  const resetUnreadCount = () => {
+    unreadCount.value = 0
+  }
+
   return {
     currentTemperature,
     currentHumidity,
@@ -108,7 +156,11 @@ export function useMQTT() {
     historicalDataPoints,
     isConnected,
     connectionError,
+    notifications,
+    unreadCount,
     connect,
-    disconnect
+    disconnect,
+    clearNotifications,
+    resetUnreadCount
   }
 }
