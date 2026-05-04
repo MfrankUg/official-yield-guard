@@ -64,6 +64,17 @@ const tempMax24 = computed(() => currentTemperature.value !== null ? Math.ceil(c
 const humMin24 = computed(() => currentHumidity.value !== null ? Math.floor(currentHumidity.value - 10) : '--')
 const humMax24 = computed(() => currentHumidity.value !== null ? Math.ceil(currentHumidity.value + 10) : '--')
 
+// Warning logic based on optimal coffee storage
+const tempWarning = computed(() => {
+  if (currentTemperature.value === null) return false
+  return currentTemperature.value > 24 || currentTemperature.value < 15
+})
+
+const humWarning = computed(() => {
+  if (currentHumidity.value === null) return false
+  return currentHumidity.value > 65 || currentHumidity.value < 40
+})
+
 </script>
 
 <template>
@@ -142,6 +153,7 @@ const humMax24 = computed(() => currentHumidity.value !== null ? Math.ceil(curre
           :min24h="tempMin24"
           :max24h="tempMax24"
           colorClass="bg-[var(--color-accent-blue)]"
+          :warning="tempWarning"
         />
         <MetricCard 
           title="Relative Humidity"
@@ -151,6 +163,7 @@ const humMax24 = computed(() => currentHumidity.value !== null ? Math.ceil(curre
           :min24h="humMin24"
           :max24h="humMax24"
           colorClass="bg-[var(--color-accent-red)]"
+          :warning="humWarning"
         />
       </div>
 

@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import { AlertTriangle } from 'lucide-vue-next'
 
 const props = defineProps({
   title: {
@@ -30,6 +31,10 @@ const props = defineProps({
   colorClass: {
     type: String,
     default: 'bg-[var(--color-accent-blue)]'
+  },
+  warning: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -42,7 +47,7 @@ const percentage = computed(() => {
 </script>
 
 <template>
-  <div class="bg-base-secondary rounded-2xl border border-border-soft p-6 shadow-sm hover:shadow-md transition-shadow">
+  <div class="bg-base-secondary rounded-2xl border border-border-soft p-6 shadow-sm hover:shadow-md transition-shadow relative">
     <div class="flex justify-between items-start mb-6">
       <div class="flex items-center space-x-3">
         <div class="p-2.5 rounded-xl bg-base-primary border border-border-soft">
@@ -50,8 +55,11 @@ const percentage = computed(() => {
         </div>
         <h3 class="text-content-secondary font-medium">{{ title }}</h3>
       </div>
-      <div class="text-[10px] uppercase tracking-wider font-semibold text-content-secondary px-2 py-1 bg-base-primary rounded-md border border-border-soft">
-        Live
+      <div class="flex items-center space-x-2">
+        <AlertTriangle v-if="warning" class="w-5 h-5 text-[var(--color-accent-red)] animate-pulse" />
+        <div class="text-[10px] uppercase tracking-wider font-semibold text-content-secondary px-2 py-1 bg-base-primary rounded-md border border-border-soft">
+          Live
+        </div>
       </div>
     </div>
     

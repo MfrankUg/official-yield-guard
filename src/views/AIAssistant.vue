@@ -205,7 +205,7 @@ watch(messages, () => {
           </div>
           <div>
             <h2 class="text-content-primary font-bold text-base sm:text-lg leading-tight">Yield Guard AI</h2>
-            <p class="text-xs sm:text-sm text-[var(--color-accent-blue)] font-medium mt-0.5">Local AI Connected</p>
+            <p class="text-xs sm:text-sm text-[var(--color-accent-blue)] font-medium mt-0.5">Predictive Environmental Intelligence</p>
           </div>
         </div>
       </div>

@@ -194,7 +194,7 @@ onMounted(() => {
             </div>
             <div>
               <h3 class="text-content-primary font-semibold text-sm">Yield Guard AI</h3>
-              <p class="text-xs text-[var(--color-accent-blue)] font-medium">Online</p>
+              <p class="text-[10px] sm:text-xs text-[var(--color-accent-blue)] font-medium">Predictive Environmental Intelligence</p>
             </div>
           </div>
           <button @click="toggleChat" class="text-content-secondary hover:text-content-primary transition-colors p-1">
