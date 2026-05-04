@@ -8,27 +8,6 @@ const { currentTemperature, currentHumidity, currentHeatIndex } = useMQTT()
 
 const selectedZone = ref('zone-a')
 
-// Mock data for other zones
-const mockData = ref({
-  'zone-b': { temp: 22.4, hum: 58.0, heat: 22.8 },
-  'zone-c': { temp: 26.1, hum: 66.5, heat: 27.2 } // Warning state mock
-})
-
-let timer
-onMounted(() => {
-  // slightly fluctuate mock data
-  timer = setInterval(() => {
-    mockData.value['zone-b'].temp += (Math.random() - 0.5) * 0.5
-    mockData.value['zone-b'].hum += (Math.random() - 0.5) * 1.0
-    mockData.value['zone-c'].temp += (Math.random() - 0.5) * 0.5
-    mockData.value['zone-c'].hum += (Math.random() - 0.5) * 1.0
-  }, 5000)
-})
-
-onUnmounted(() => {
-  clearInterval(timer)
-})
-
 const zones = [
   { id: 'zone-a', name: 'Zone A: Main Coffee Storage', color: 'border-[var(--color-accent-blue)]' },
   { id: 'zone-b', name: 'Zone B: Sorting & Processing', color: 'border-green-500' },
@@ -44,12 +23,11 @@ const activeZoneData = computed(() => {
       status: currentTemperature.value !== null ? 'Live MQTT' : 'Waiting for data...'
     }
   } else {
-    const data = mockData.value[selectedZone.value]
     return {
-      temp: data.temp,
-      hum: data.hum,
-      heat: data.heat,
-      status: 'Simulated Data'
+      temp: '--',
+      hum: '--',
+      heat: '--',
+      status: 'Offline / No Sensor'
     }
   }
 })
@@ -138,7 +116,6 @@ const getZoneClass = (zoneId) => {
             :class="getZoneClass('zone-c')"
           >
             <div class="absolute top-4 right-4 flex items-center space-x-2" v-if="selectedZone !== 'zone-c'">
-               <AlertTriangle class="w-4 h-4 text-[var(--color-accent-red)]" v-if="mockData['zone-c'].hum > 65" />
             </div>
             <Box class="w-8 h-8 mb-3 opacity-80" :class="selectedZone === 'zone-c' ? 'text-[var(--color-accent-red)]' : 'text-content-secondary'" />
             <span class="font-bold text-lg text-content-primary tracking-wide">ZONE C</span>
