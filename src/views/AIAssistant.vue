@@ -86,7 +86,7 @@ Keep your answers comprehensive, professional, and directly related to warehouse
     messages.value.push({
       id: Date.now(),
       role: 'ai',
-      content: 'Sorry, I am unable to connect to the local Ollama service. Please make sure Ollama is running at localhost:11434.'
+      content: 'Sorry, I am unable to connect to the local AI service. Please make sure the AI engine is running at localhost:11434.'
     })
   } finally {
     isTyping.value = false
@@ -145,7 +145,7 @@ watch(messages, () => {
           </div>
           <div>
             <h2 class="text-content-primary font-bold text-base sm:text-lg leading-tight">Yield Guard AI</h2>
-            <p class="text-xs sm:text-sm text-[var(--color-accent-blue)] font-medium mt-0.5">Local Ollama Connected</p>
+            <p class="text-xs sm:text-sm text-[var(--color-accent-blue)] font-medium mt-0.5">Local AI Connected</p>
           </div>
         </div>
       </div>

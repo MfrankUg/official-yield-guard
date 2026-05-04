@@ -20,7 +20,7 @@ const activeZoneData = computed(() => {
       temp: currentTemperature.value !== null ? currentTemperature.value : '--',
       hum: currentHumidity.value !== null ? currentHumidity.value : '--',
       heat: currentHeatIndex.value !== null ? currentHeatIndex.value : '--',
-      status: currentTemperature.value !== null ? 'Live MQTT' : 'Waiting for data...'
+      status: currentTemperature.value !== null ? 'Live Data' : 'Waiting for data...'
     }
   } else {
     return {
@@ -80,48 +80,77 @@ const getZoneClass = (zoneId) => {
     <!-- Main Content Grid -->
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
       
-      <!-- Left: Interactive Map -->
-      <div class="xl:col-span-2 bg-base-secondary rounded-2xl border border-border-soft p-6 shadow-sm">
-        <h3 class="text-lg font-bold text-content-primary mb-6">Interactive Floorplan</h3>
+      <!-- Left Column: Maps -->
+      <div class="xl:col-span-2 flex flex-col space-y-6 lg:space-y-8">
         
-        <!-- CSS Grid Map representation -->
-        <div class="grid grid-cols-2 grid-rows-2 gap-4 h-[400px]">
-          <!-- Zone A -->
-          <div 
-            @click="selectedZone = 'zone-a'"
-            :class="getZoneClass('zone-a') + ' col-span-2 relative overflow-hidden'"
-          >
-            <div class="absolute top-4 right-4 flex items-center space-x-2">
-              <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-              <span class="text-xs font-medium text-content-secondary">Active Sensor</span>
-            </div>
-            <Box class="w-8 h-8 mb-3 opacity-80" :class="selectedZone === 'zone-a' ? 'text-[var(--color-accent-blue)]' : 'text-content-secondary'" />
-            <span class="font-bold text-lg text-content-primary tracking-wide">ZONE A</span>
-            <span class="text-sm text-content-secondary mt-1">Main Coffee Storage</span>
-          </div>
+        <!-- Interactive Floorplan -->
+        <div class="bg-base-secondary rounded-2xl border border-border-soft p-6 shadow-sm">
+          <h3 class="text-lg font-bold text-content-primary mb-6">Interactive Floorplan</h3>
           
-          <!-- Zone B -->
-          <div 
-            @click="selectedZone = 'zone-b'"
-            :class="getZoneClass('zone-b')"
-          >
-            <Box class="w-8 h-8 mb-3 opacity-80" :class="selectedZone === 'zone-b' ? 'text-green-500' : 'text-content-secondary'" />
-            <span class="font-bold text-lg text-content-primary tracking-wide">ZONE B</span>
-            <span class="text-sm text-content-secondary mt-1">Sorting & Processing</span>
-          </div>
-
-          <!-- Zone C -->
-          <div 
-            @click="selectedZone = 'zone-c'"
-            :class="getZoneClass('zone-c')"
-          >
-            <div class="absolute top-4 right-4 flex items-center space-x-2" v-if="selectedZone !== 'zone-c'">
+          <!-- CSS Grid Map representation -->
+          <div class="grid grid-cols-2 grid-rows-2 gap-4 h-[400px]">
+            <!-- Zone A -->
+            <div 
+              @click="selectedZone = 'zone-a'"
+              :class="getZoneClass('zone-a') + ' col-span-2 relative overflow-hidden'"
+            >
+              <div class="absolute top-4 right-4 flex items-center space-x-2">
+                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                <span class="text-xs font-medium text-content-secondary">Active Sensor</span>
+              </div>
+              <Box class="w-8 h-8 mb-3 opacity-80" :class="selectedZone === 'zone-a' ? 'text-[var(--color-accent-blue)]' : 'text-content-secondary'" />
+              <span class="font-bold text-lg text-content-primary tracking-wide">ZONE A</span>
+              <span class="text-sm text-content-secondary mt-1">Main Coffee Storage</span>
             </div>
-            <Box class="w-8 h-8 mb-3 opacity-80" :class="selectedZone === 'zone-c' ? 'text-[var(--color-accent-red)]' : 'text-content-secondary'" />
-            <span class="font-bold text-lg text-content-primary tracking-wide">ZONE C</span>
-            <span class="text-sm text-content-secondary mt-1 text-center">Packaging</span>
+            
+            <!-- Zone B -->
+            <div 
+              @click="selectedZone = 'zone-b'"
+              :class="getZoneClass('zone-b')"
+            >
+              <Box class="w-8 h-8 mb-3 opacity-80" :class="selectedZone === 'zone-b' ? 'text-green-500' : 'text-content-secondary'" />
+              <span class="font-bold text-lg text-content-primary tracking-wide">ZONE B</span>
+              <span class="text-sm text-content-secondary mt-1">Sorting & Processing</span>
+            </div>
+
+            <!-- Zone C -->
+            <div 
+              @click="selectedZone = 'zone-c'"
+              :class="getZoneClass('zone-c')"
+            >
+              <div class="absolute top-4 right-4 flex items-center space-x-2" v-if="selectedZone !== 'zone-c'">
+              </div>
+              <Box class="w-8 h-8 mb-3 opacity-80" :class="selectedZone === 'zone-c' ? 'text-[var(--color-accent-red)]' : 'text-content-secondary'" />
+              <span class="font-bold text-lg text-content-primary tracking-wide">ZONE C</span>
+              <span class="text-sm text-content-secondary mt-1 text-center">Packaging</span>
+            </div>
           </div>
         </div>
+
+        <!-- Realtime Location Map -->
+        <div class="bg-base-secondary rounded-2xl border border-border-soft p-6 shadow-sm">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-lg font-bold text-content-primary">Geographic Location</h3>
+            <span class="flex items-center text-xs font-medium text-green-500 bg-green-500/10 px-2.5 py-1 rounded-full border border-green-500/20">
+              <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse mr-1.5"></span>
+              Live GPS Tracking
+            </span>
+          </div>
+          <div class="h-[300px] w-full rounded-xl overflow-hidden border border-border-soft bg-base-primary">
+            <!-- Using OpenStreetMap with a CSS filter to create a beautiful dark mode map -->
+            <iframe 
+              width="100%" 
+              height="100%" 
+              frameborder="0" 
+              scrolling="no" 
+              marginheight="0" 
+              marginwidth="0" 
+              src="https://www.openstreetmap.org/export/embed.html?bbox=29.9%2C0.2%2C30.2%2C0.4&amp;layer=mapnik&amp;marker=0.30%2C30.05" 
+              style="border: 0; filter: invert(90%) hue-rotate(180deg) contrast(85%);" 
+            ></iframe>
+          </div>
+        </div>
+
       </div>
 
       <!-- Right: Zone Details -->
@@ -155,12 +184,6 @@ const getZoneClass = (zoneId) => {
               max24h="--"
               colorClass="bg-[var(--color-accent-red)]"
             />
-          </div>
-          
-          <div class="mt-6 pt-6 border-t border-border-soft">
-            <p class="text-sm text-content-secondary leading-relaxed">
-              Select a zone on the map or from the dropdown to view its isolated environmental metrics. Zone A is currently wired to the live MQTT broker.
-            </p>
           </div>
         </div>
       </div>

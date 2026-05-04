@@ -97,7 +97,7 @@ Keep your answers concise, professional, and directly related to warehouse safet
     messages.value.push({
       id: Date.now(),
       role: 'ai',
-      content: 'Sorry, I am unable to connect to the local Ollama service. Please make sure Ollama is running at localhost:11434 and CORS is configured if necessary.'
+      content: 'Sorry, I am unable to connect to the local AI service. Please make sure the AI engine is running at localhost:11434 and CORS is configured if necessary.'
     })
   } finally {
     isTyping.value = false

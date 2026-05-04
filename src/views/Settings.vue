@@ -131,7 +131,7 @@ const saveSettings = () => {
     <div class="bg-base-secondary rounded-2xl border border-border-soft shadow-sm overflow-hidden">
       <div class="p-6 border-b border-border-soft flex items-center bg-base-primary/30">
         <Cpu class="w-5 h-5 text-content-secondary mr-3" />
-        <h3 class="text-lg font-bold text-content-primary">AI Integration (Ollama)</h3>
+        <h3 class="text-lg font-bold text-content-primary">AI Integration</h3>
       </div>
       <div class="p-6 space-y-6">
         <div>

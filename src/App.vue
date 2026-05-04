@@ -50,7 +50,7 @@ onUnmounted(() => {
         class="bg-[var(--color-accent-red)]/10 text-[var(--color-accent-red)] px-6 py-2 text-sm font-medium border-b border-[var(--color-accent-red)]/20 flex items-center justify-center shrink-0"
       >
         <span class="w-2 h-2 rounded-full bg-[var(--color-accent-red)] animate-pulse mr-2"></span>
-        Connecting to Yield Guard MQTT Broker...
+        Connecting to Yield Guard Sensors...
       </div>
 
       <div class="flex-1 overflow-y-auto p-4 sm:p-8">
