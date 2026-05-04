@@ -5,12 +5,15 @@ import Sidebar from './components/Sidebar.vue'
 import TopHeader from './components/TopHeader.vue'
 import AIChatInterface from './components/AIChatInterface.vue'
 import { useMQTT } from './composables/useMQTT'
+import { useTheme } from './composables/useTheme'
 
 const { 
   isConnected, 
   connect, 
   disconnect 
 } = useMQTT()
+
+const { initTheme } = useTheme()
 
 const route = useRoute()
 
@@ -20,6 +23,7 @@ const toggleSidebar = () => {
 }
 
 onMounted(() => {
+  initTheme()
   connect()
 })
 

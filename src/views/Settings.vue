@@ -51,7 +51,7 @@ const saveSettings = () => {
         </div>
         <div>
           <h2 class="text-xl font-bold text-content-primary">System Settings</h2>
-          <p class="text-sm text-content-secondary">Configure alerts, thresholds, and AI integrations</p>
+          <p class="text-sm text-content-secondary">Configure alerts and environmental thresholds</p>
         </div>
       </div>
       
@@ -127,28 +127,7 @@ const saveSettings = () => {
       </div>
     </div>
 
-    <!-- AI Settings -->
-    <div class="bg-base-secondary rounded-2xl border border-border-soft shadow-sm overflow-hidden">
-      <div class="p-6 border-b border-border-soft flex items-center bg-base-primary/30">
-        <Cpu class="w-5 h-5 text-content-secondary mr-3" />
-        <h3 class="text-lg font-bold text-content-primary">AI Integration</h3>
-      </div>
-      <div class="p-6 space-y-6">
-        <div>
-          <label class="block text-sm font-medium text-content-secondary mb-2">API Endpoint</label>
-          <input type="text" v-model="aiConfig.endpoint" class="w-full bg-base-primary border border-border-soft rounded-xl px-4 py-3 text-sm text-content-primary focus:outline-none focus:border-[var(--color-accent-blue)] focus:ring-1 focus:ring-[var(--color-accent-blue)] transition-colors" />
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-content-secondary mb-2">Local LLM Model</label>
-          <select v-model="aiConfig.model" class="w-full bg-base-primary border border-border-soft rounded-xl px-4 py-3 text-sm text-content-primary focus:outline-none focus:border-[var(--color-accent-blue)] focus:ring-1 focus:ring-[var(--color-accent-blue)] transition-colors appearance-none">
-            <option value="llama3">Llama 3 (8B)</option>
-            <option value="mistral">Mistral (7B)</option>
-            <option value="phi3">Phi-3 Mini</option>
-            <option value="gemma">Gemma (2B)</option>
-          </select>
-        </div>
-      </div>
-    </div>
+
 
     <!-- Mobile Save Button -->
     <button 

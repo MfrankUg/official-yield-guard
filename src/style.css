@@ -8,11 +8,21 @@
   --color-accent-blue: #3b82f6;
   --color-accent-red: #ef4444;
   --color-border-soft: #1f2937;
-  --font-sans: "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-sans: "Poppins", "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 @layer base {
   body {
-    @apply bg-base-primary text-content-primary font-sans antialiased m-0 p-0;
+    @apply bg-base-primary text-content-primary font-sans antialiased m-0 p-0 transition-colors duration-300;
+  }
+
+  html.light {
+    --color-base-primary: #f3f4f6;
+    --color-base-secondary: #ffffff;
+    --color-content-primary: #111827;
+    --color-content-secondary: #6b7280;
+    --color-accent-blue: #2563eb;
+    --color-accent-red: #dc2626;
+    --color-border-soft: #e5e7eb;
   }
 }

@@ -1,10 +1,12 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import { Search, Bell, Menu, CheckCircle2, AlertTriangle } from 'lucide-vue-next'
+import { Search, Bell, Menu, CheckCircle2, AlertTriangle, Sun, Moon } from 'lucide-vue-next'
 import { useMQTT } from '../composables/useMQTT'
+import { useTheme } from '../composables/useTheme'
 
 const emit = defineEmits(['toggle-sidebar'])
 const { notifications, unreadCount, clearNotifications, resetUnreadCount } = useMQTT()
+const { isDarkMode, toggleTheme } = useTheme()
 
 const currentDateTime = ref('')
 const isDropdownOpen = ref(false)
@@ -44,7 +46,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <header class="h-20 flex items-center justify-between px-4 sm:px-8 bg-base-primary border-b border-border-soft relative">
+  <header class="h-20 flex items-center justify-between px-4 sm:px-8 bg-base-primary border-b border-border-soft relative transition-colors duration-300">
     
     <div class="flex items-center flex-1">
       <!-- Hamburger Menu -->
@@ -69,7 +71,19 @@ onUnmounted(() => {
     </div>
 
     <!-- Right side items -->
-    <div class="flex items-center space-x-4 sm:space-x-6">
+    <div class="flex items-center space-x-2 sm:space-x-4">
+      
+      <!-- Theme Toggle -->
+      <button 
+        @click="toggleTheme"
+        class="p-2 text-content-secondary hover:text-content-primary transition-colors bg-base-secondary border border-border-soft rounded-lg mr-2"
+        title="Toggle Theme"
+      >
+        <Sun v-if="isDarkMode" class="w-4 h-4 sm:w-5 sm:h-5" />
+        <Moon v-else class="w-4 h-4 sm:w-5 sm:h-5" />
+      </button>
+
+      <!-- Date/Time -->
       <div class="hidden md:block text-content-secondary text-sm font-medium bg-base-secondary px-4 py-2 rounded-lg border border-border-soft shadow-sm">
         {{ currentDateTime }}
       </div>
