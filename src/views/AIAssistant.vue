@@ -39,7 +39,7 @@ const sendMessage = async () => {
   scrollToBottom()
   isTyping.value = true
 
-  const ollamaMessages = [
+  const groqMessages = [
     {
       role: 'system',
       content: `You are Yield Guard AI, a professional agricultural warehouse monitoring assistant. 
@@ -58,35 +58,35 @@ Keep your answers comprehensive, professional, and directly related to warehouse
   ]
 
   try {
-    const response = await fetch('http://localhost:11434/api/chat', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: import.meta.env.VITE_OLLAMA_MODEL || 'llama3',
-        messages: ollamaMessages,
-        stream: false
-      })
+    const { Groq } = await import('groq-sdk')
+    const groq = new Groq({ 
+      apiKey: import.meta.env.VITE_GROQ_API_KEY,
+      dangerouslyAllowBrowser: true 
     })
 
-    if (!response.ok) {
-      throw new Error(`Ollama API error: ${response.status}`)
-    }
+    const chatCompletion = await groq.chat.completions.create({
+      messages: groqMessages,
+      model: "llama-3.1-8b-instant",
+      temperature: 0.7,
+      max_completion_tokens: 1024,
+      top_p: 1,
+      stream: false,
+      stop: null
+    })
 
-    const data = await response.json()
+    const replyContent = chatCompletion.choices[0]?.message?.content || 'I have no response.'
     
     messages.value.push({
       id: Date.now(),
       role: 'ai',
-      content: data.message.content
+      content: replyContent
     })
   } catch (err) {
     console.error(err)
     messages.value.push({
       id: Date.now(),
       role: 'ai',
-      content: 'Sorry, I am unable to connect to the local AI service. Please make sure the AI engine is running at localhost:11434.'
+      content: 'Sorry, I am unable to connect to the cloud AI service. Please verify your Groq API key and network connection.'
     })
   } finally {
     isTyping.value = false
