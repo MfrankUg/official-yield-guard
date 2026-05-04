@@ -67,12 +67,14 @@ const humMax24 = computed(() => currentHumidity.value !== null ? Math.ceil(curre
 // Warning logic based on optimal coffee storage
 const tempWarning = computed(() => {
   if (currentTemperature.value === null) return false
-  return currentTemperature.value > 24 || currentTemperature.value < 15
+  const temp = Number(currentTemperature.value)
+  return temp > 24 || temp < 15
 })
 
 const humWarning = computed(() => {
   if (currentHumidity.value === null) return false
-  return currentHumidity.value > 65 || currentHumidity.value < 40
+  const hum = Number(currentHumidity.value)
+  return hum > 65 || hum < 40
 })
 
 </script>
