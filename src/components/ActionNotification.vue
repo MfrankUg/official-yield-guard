@@ -60,7 +60,7 @@ const onTouchEnd = () => {
       <div 
         class="pointer-events-auto w-full max-w-lg md:max-w-2xl bg-base-secondary rounded-2xl shadow-2xl border-2 flex overflow-hidden relative cursor-grab active:cursor-grabbing"
         :class="[
-          activePopup.severity === 'danger' ? 'border-[var(--color-accent-red)]' : 'border-yellow-500',
+          activePopup.severity === 'danger' ? 'border-[var(--color-accent-red)]' : 'border-orange-500',
           !isDragging ? 'transition-all duration-300' : ''
         ]"
         :style="currentX ? { transform: `translateX(${currentX}px)`, opacity: 1 - Math.abs(currentX)/300 } : {}"
@@ -75,7 +75,7 @@ const onTouchEnd = () => {
         <!-- Icon Side -->
         <div 
           class="w-12 sm:w-16 flex items-center justify-center shrink-0"
-          :class="activePopup.severity === 'danger' ? 'bg-[var(--color-accent-red)] text-white' : 'bg-yellow-500 text-white'"
+          :class="activePopup.severity === 'danger' ? 'bg-[var(--color-accent-red)] text-white' : 'bg-orange-500 text-white'"
         >
           <AlertTriangle v-if="activePopup.severity === 'danger'" class="w-6 h-6 sm:w-8 sm:h-8 animate-pulse" />
           <AlertTriangle v-else class="w-6 h-6 sm:w-8 sm:h-8" />
@@ -86,7 +86,7 @@ const onTouchEnd = () => {
           <div class="flex justify-between items-start">
             <h3 
               class="font-bold text-sm sm:text-base leading-tight mb-1"
-              :class="activePopup.severity === 'danger' ? 'text-[var(--color-accent-red)]' : 'text-yellow-600 dark:text-yellow-500'"
+              :class="activePopup.severity === 'danger' ? 'text-[var(--color-accent-red)]' : 'text-orange-600 dark:text-orange-500'"
             >
               {{ activePopup.message }}
             </h3>
