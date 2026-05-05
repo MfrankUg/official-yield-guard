@@ -58,11 +58,11 @@ const chartData = computed(() => {
   }
 })
 
-const tempMin24 = computed(() => currentTemperature.value !== null ? Math.floor(currentTemperature.value - 5) : '--')
-const tempMax24 = computed(() => currentTemperature.value !== null ? Math.ceil(currentTemperature.value + 5) : '--')
+const optimalTempMin = 15
+const optimalTempMax = 24
 
-const humMin24 = computed(() => currentHumidity.value !== null ? Math.floor(currentHumidity.value - 10) : '--')
-const humMax24 = computed(() => currentHumidity.value !== null ? Math.ceil(currentHumidity.value + 10) : '--')
+const optimalHumMin = 40
+const optimalHumMax = 65
 
 // Warning logic based on optimal coffee storage
 const tempWarning = computed(() => {
@@ -152,8 +152,8 @@ const humWarning = computed(() => {
           :icon="Thermometer"
           :value="currentTemperature"
           unit="°C"
-          :min24h="tempMin24"
-          :max24h="tempMax24"
+          :optimalMin="optimalTempMin"
+          :optimalMax="optimalTempMax"
           colorClass="bg-[var(--color-accent-blue)]"
           :warning="tempWarning"
         />
@@ -162,8 +162,8 @@ const humWarning = computed(() => {
           :icon="Droplet"
           :value="currentHumidity"
           unit="%"
-          :min24h="humMin24"
-          :max24h="humMax24"
+          :optimalMin="optimalHumMin"
+          :optimalMax="optimalHumMax"
           colorClass="bg-[var(--color-accent-red)]"
           :warning="humWarning"
         />

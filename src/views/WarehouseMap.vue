@@ -171,8 +171,8 @@ const getZoneClass = (zoneId) => {
               :icon="Thermometer"
               :value="activeZoneData.temp"
               unit="°C"
-              min24h="--"
-              max24h="--"
+              optimalMin="--"
+              optimalMax="--"
               colorClass="bg-[var(--color-accent-blue)]"
             />
             <MetricCard 
@@ -180,8 +180,8 @@ const getZoneClass = (zoneId) => {
               :icon="Droplet"
               :value="activeZoneData.hum"
               unit="%"
-              min24h="--"
-              max24h="--"
+              optimalMin="--"
+              optimalMax="--"
               colorClass="bg-[var(--color-accent-red)]"
             />
           </div>

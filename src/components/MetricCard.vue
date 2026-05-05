@@ -20,11 +20,11 @@ const props = defineProps({
     type: String,
     required: true
   },
-  min24h: {
+  optimalMin: {
     type: [Number, String],
     required: true
   },
-  max24h: {
+  optimalMax: {
     type: [Number, String],
     required: true
   },
@@ -39,9 +39,9 @@ const props = defineProps({
 })
 
 const percentage = computed(() => {
-  const range = props.max24h - props.min24h
-  if (range === 0) return 50
-  let pct = ((props.value - props.min24h) / range) * 100
+  const range = props.optimalMax - props.optimalMin
+  if (range === 0 || isNaN(range)) return 50
+  let pct = ((props.value - props.optimalMin) / range) * 100
   return Math.max(0, Math.min(100, pct))
 })
 </script>
@@ -71,11 +71,11 @@ const percentage = computed(() => {
       <span class="text-xl text-content-secondary ml-1 font-medium">{{ unit }}</span>
     </div>
 
-    <!-- 24h Range Bar -->
+    <!-- Optimal Range Bar -->
     <div class="space-y-2">
       <div class="flex justify-between text-xs text-content-secondary font-medium">
-        <span>Min: {{ min24h }}{{ unit }}</span>
-        <span>Max: {{ max24h }}{{ unit }}</span>
+        <span>Optimal Min: {{ optimalMin }}{{ unit }}</span>
+        <span>Optimal Max: {{ optimalMax }}{{ unit }}</span>
       </div>
       <div class="h-2 w-full bg-base-primary rounded-full overflow-hidden border border-border-soft relative">
         <!-- Range indicators / visual bar -->
