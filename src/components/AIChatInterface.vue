@@ -188,7 +188,11 @@ onMounted(() => {
     >
       <div 
         v-if="isOpen" 
-        class="bg-base-secondary rounded-2xl border border-border-soft flex flex-col shadow-2xl overflow-hidden mb-3 sm:mb-4 w-[calc(100vw-2rem)] sm:w-[450px] md:w-[500px] h-[calc(100dvh-120px)] sm:h-[650px] md:h-[750px] max-h-[calc(100dvh-120px)] sm:max-h-[85vh] transition-all"
+        class="bg-base-secondary sm:rounded-2xl border-0 sm:border border-border-soft flex flex-col shadow-2xl overflow-hidden 
+               fixed sm:relative inset-0 sm:inset-auto z-[150] sm:z-auto
+               w-full sm:w-[450px] md:w-[500px] 
+               h-[100dvh] sm:h-[650px] md:h-[750px] 
+               sm:max-h-[85vh] sm:mb-4 transition-all"
       >
         <!-- Chat Header -->
         <div class="px-6 py-4 border-b border-border-soft flex items-center justify-between bg-base-secondary">
@@ -253,7 +257,7 @@ onMounted(() => {
         </div>
 
         <!-- Input Area -->
-        <div class="p-4 border-t border-border-soft bg-base-secondary">
+        <div class="p-4 pb-6 sm:pb-4 border-t border-border-soft bg-base-secondary">
           <form @submit.prevent="sendMessage" class="relative flex items-center">
             <input 
               v-model="inputMessage"

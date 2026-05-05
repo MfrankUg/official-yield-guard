@@ -233,7 +233,7 @@ watch(messages, () => {
       </div>
 
       <!-- Input Area -->
-      <div class="p-3 sm:p-6 border-t border-border-soft bg-base-secondary shrink-0">
+      <div class="p-4 pb-6 sm:p-6 border-t border-border-soft bg-base-secondary shrink-0">
         <form @submit.prevent="sendMessage" class="relative flex items-center max-w-4xl mx-auto">
           <input 
             v-model="inputMessage"

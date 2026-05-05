@@ -35,7 +35,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="flex h-screen bg-base-primary text-content-primary overflow-hidden font-sans relative">
+  <div class="flex h-[100dvh] bg-base-primary text-content-primary overflow-hidden font-sans relative">
     
     <!-- Mobile Sidebar Backdrop -->
     <div 
