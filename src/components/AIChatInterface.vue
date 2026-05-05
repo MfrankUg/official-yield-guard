@@ -171,7 +171,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+  <div class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[100] flex flex-col items-end">
     
     <!-- Chat Window -->
     <transition
@@ -184,7 +184,7 @@ onMounted(() => {
     >
       <div 
         v-if="isOpen" 
-        class="bg-base-secondary rounded-2xl border border-border-soft flex flex-col shadow-2xl overflow-hidden mb-4 w-[95vw] sm:w-[450px] md:w-[500px] h-[75vh] sm:h-[650px] md:h-[750px] max-h-[85vh] sm:max-h-[90vh] transition-all"
+        class="bg-base-secondary rounded-2xl border border-border-soft flex flex-col shadow-2xl overflow-hidden mb-3 sm:mb-4 w-[calc(100vw-2rem)] sm:w-[450px] md:w-[500px] h-[calc(100dvh-120px)] sm:h-[650px] md:h-[750px] max-h-[calc(100dvh-120px)] sm:max-h-[85vh] transition-all"
       >
         <!-- Chat Header -->
         <div class="px-6 py-4 border-b border-border-soft flex items-center justify-between bg-base-secondary">
