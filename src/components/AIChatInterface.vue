@@ -117,7 +117,6 @@ You analyze current environmental conditions and answer questions to ensure opti
 CURRENT SENSOR DATA:
 - Air Temperature: ${currentTemperature.value !== null ? currentTemperature.value.toFixed(1) + '°C' : '--'}
 - Relative Humidity: ${currentHumidity.value !== null ? currentHumidity.value.toFixed(1) + '%' : '--'}
-- Heat Index: ${currentHeatIndex.value !== null ? currentHeatIndex.value.toFixed(1) + '°C' : '--'}
 
 Keep your answers concise, professional, and directly related to warehouse safety, mold risks, or environmental control.`
     },

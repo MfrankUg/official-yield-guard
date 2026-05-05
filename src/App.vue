@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import Sidebar from './components/Sidebar.vue'
 import TopHeader from './components/TopHeader.vue'
 import AIChatInterface from './components/AIChatInterface.vue'
+import ActionNotification from './components/ActionNotification.vue'
 import { useMQTT } from './composables/useMQTT'
 import { useTheme } from './composables/useTheme'
 
@@ -43,6 +44,9 @@ onUnmounted(() => {
       class="fixed inset-0 bg-black/50 z-40 lg:hidden transition-opacity"
     ></div>
 
+    <!-- Global Action Notifications -->
+    <ActionNotification />
+
     <Sidebar :isOpen="isSidebarOpen" @close="isSidebarOpen = false" />
     
     <main class="flex-1 flex flex-col h-full overflow-hidden relative min-w-0">
@@ -57,7 +61,10 @@ onUnmounted(() => {
         Connecting to Yield Guard Sensors...
       </div>
 
-      <div class="flex-1 overflow-y-auto p-4 sm:p-8">
+      <div 
+        class="flex-1"
+        :class="route.path === '/ai-assistant' ? 'p-0 overflow-hidden flex flex-col' : 'p-4 sm:p-8 overflow-y-auto'"
+      >
         <!-- Render current route -->
         <router-view></router-view>
       </div>

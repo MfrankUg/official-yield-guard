@@ -107,7 +107,6 @@ You analyze current environmental conditions and answer questions to ensure opti
 CURRENT SENSOR DATA:
 - Air Temperature: ${currentTemperature.value !== null ? currentTemperature.value.toFixed(1) + '°C' : '--'}
 - Relative Humidity: ${currentHumidity.value !== null ? currentHumidity.value.toFixed(1) + '%' : '--'}
-- Heat Index: ${currentHeatIndex.value !== null ? currentHeatIndex.value.toFixed(1) + '°C' : '--'}
 
 Keep your answers comprehensive, professional, and directly related to warehouse safety, mold risks, or environmental control.`
     },
@@ -164,43 +163,15 @@ watch(messages, () => {
 </script>
 
 <template>
-  <!-- Main container: force a height so the internal chat scrolls properly on mobile -->
-  <div class="max-w-7xl mx-auto flex flex-col lg:flex-row gap-4 sm:gap-8 h-[calc(100vh-12rem)] sm:h-[calc(100vh-10rem)]">
+  <!-- Main container -->
+  <div class="w-full h-full flex flex-col bg-base-primary">
     
-    <!-- AI Context Info (Stacks on top on mobile) -->
-    <div class="w-full lg:w-80 flex-shrink-0 flex flex-col space-y-4 sm:space-y-6 order-1 lg:order-2 overflow-y-auto lg:overflow-visible">
-      <div class="bg-base-secondary rounded-2xl border border-border-soft p-4 sm:p-6 shadow-sm">
-        <h3 class="text-content-primary font-bold text-base sm:text-lg mb-2 sm:mb-4 flex items-center">
-          <Sparkles class="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-[var(--color-accent-blue)]" />
-          AI Context
-        </h3>
-        <p class="text-xs sm:text-sm text-content-secondary mb-4 sm:mb-6 leading-relaxed hidden sm:block">
-          The AI currently has access to the live sensor data from the warehouse below. It uses this to provide relevant predictive analysis.
-        </p>
-        
-        <div class="space-y-3 sm:space-y-4">
-          <div class="flex justify-between items-center pb-2 sm:pb-4 border-b border-border-soft">
-            <span class="text-content-secondary text-xs sm:text-sm font-medium">Temperature</span>
-            <span class="text-content-primary text-sm sm:text-base font-bold">{{ currentTemperature !== null ? currentTemperature.toFixed(1) + ' °C' : '--' }}</span>
-          </div>
-          <div class="flex justify-between items-center pb-2 sm:pb-4 border-b border-border-soft">
-            <span class="text-content-secondary text-xs sm:text-sm font-medium">Humidity</span>
-            <span class="text-content-primary text-sm sm:text-base font-bold">{{ currentHumidity !== null ? currentHumidity.toFixed(1) + ' %' : '--' }}</span>
-          </div>
-          <div class="flex justify-between items-center">
-            <span class="text-content-secondary text-xs sm:text-sm font-medium">Heat Index</span>
-            <span class="text-content-primary text-sm sm:text-base font-bold">{{ currentHeatIndex !== null ? currentHeatIndex.toFixed(1) + ' °C' : '--' }}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- Chat Interface -->
-    <div class="flex-1 bg-base-secondary rounded-2xl border border-border-soft flex flex-col shadow-sm overflow-hidden order-2 lg:order-1 min-h-[500px] sm:min-h-[600px] transition-all">
+    <div class="w-full flex-1 bg-base-secondary flex flex-col overflow-hidden transition-all">
       <!-- Chat Header -->
-      <div class="px-4 py-3 sm:px-8 sm:py-6 border-b border-border-soft flex items-center justify-between bg-base-secondary shrink-0">
+      <div class="px-4 py-3 sm:px-6 sm:py-4 border-b border-border-soft flex items-center justify-between bg-base-secondary shrink-0">
         <div class="flex items-center space-x-3 sm:space-x-4">
-          <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[var(--color-accent-blue)]/20 flex items-center justify-center shrink-0">
+          <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[var(--color-accent-blue)]/10 flex items-center justify-center shrink-0 border border-[var(--color-accent-blue)]/20">
             <Sparkles class="w-4 h-4 sm:w-5 sm:h-5 text-[var(--color-accent-blue)]" />
           </div>
           <div>

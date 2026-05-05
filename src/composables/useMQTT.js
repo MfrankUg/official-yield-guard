@@ -11,6 +11,8 @@ const connectionError = ref(null)
 const historicalDataPoints = ref([])
 const notifications = ref([])
 const unreadCount = ref(0)
+const activePopup = ref(null) // Actionable insight popup state
+let popupTimeout = null
 let lastStatus = 'Optimal'
 
 let client = null
@@ -19,6 +21,70 @@ let lastUpdateTime = 0
 // Request browser notification permission
 if ('Notification' in window && Notification.permission === 'default') {
   Notification.requestPermission()
+}
+
+const alertCooldowns = new Map()
+
+// Evaluate raw sensor data to generate actionable insights
+const evaluateActionableInsights = (temp, hum) => {
+  const alerts = []
+
+  // Check Humidity
+  if (hum > 70) {
+    alerts.push({ severity: 'danger', message: `Danger: Critical Humidity (${hum.toFixed(1)}%). High mold risk.`, action: 'Open ventilations or start dehumidifiers immediately.' })
+  } else if (hum > 65) {
+    alerts.push({ severity: 'warning', message: `Warning: High Humidity (${hum.toFixed(1)}%).`, action: 'Monitor closely and consider ventilation.' })
+  } else if (hum < 30) {
+    alerts.push({ severity: 'danger', message: `Danger: Critical Low Humidity (${hum.toFixed(1)}%). Bean drying risk.`, action: 'Activate humidifiers immediately.' })
+  } else if (hum < 40) {
+    alerts.push({ severity: 'warning', message: `Warning: Low Humidity (${hum.toFixed(1)}%).`, action: 'Consider activating humidifiers.' })
+  }
+
+  // Check Temperature independently
+  if (temp > 26) {
+    alerts.push({ severity: 'danger', message: `Danger: Critical High Temperature (${temp.toFixed(1)}°C). Quality loss risk.`, action: 'Turn on cooling systems immediately.' })
+  } else if (temp > 24) {
+    alerts.push({ severity: 'warning', message: `Warning: High Temperature (${temp.toFixed(1)}°C).`, action: 'Ensure proper air circulation.' })
+  } else if (temp < 10) {
+    alerts.push({ severity: 'danger', message: `Danger: Critical Low Temperature (${temp.toFixed(1)}°C). Freezing risk.`, action: 'Turn on heating systems immediately.' })
+  } else if (temp < 15) {
+    alerts.push({ severity: 'warning', message: `Warning: Low Temperature (${temp.toFixed(1)}°C).`, action: 'Monitor for condensation.' })
+  }
+
+  const now = Date.now()
+  const newAlerts = alerts.filter(alert => {
+    const lastAlertTime = alertCooldowns.get(alert.message) || 0
+    // 60-second cooldown per specific alert message to prevent spam and infinite popups
+    if (now - lastAlertTime < 60000) return false 
+    alertCooldowns.set(alert.message, now)
+    return true
+  })
+
+  if (newAlerts.length > 0) {
+    newAlerts.forEach(alert => {
+      // Add to Notification Bell
+      notifications.value.unshift({
+        id: Date.now() + Math.random(),
+        message: `${alert.message} ${alert.action}`,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      })
+      unreadCount.value++
+    })
+    
+    // Keep only the last 20 notifications
+    if (notifications.value.length > 20) {
+      notifications.value.length = 20
+    }
+    
+    // Show UI popup (if multiple trigger at once, just show the first one, they are all in the bell)
+    activePopup.value = newAlerts[0]
+    
+    // Auto dismiss UI popup quickly
+    if (popupTimeout) clearTimeout(popupTimeout)
+    popupTimeout = setTimeout(() => {
+      activePopup.value = null
+    }, 4000) // Show for 4 seconds
+  }
 }
 
 export function useMQTT() {
@@ -89,6 +155,7 @@ export function useMQTT() {
             // Only update history if we have valid values
             if (parsedData.temperature !== undefined && parsedData.humidity !== undefined) {
               updateHistory(parsedData.temperature, parsedData.humidity)
+              evaluateActionableInsights(parsedData.temperature, parsedData.humidity)
             }
           }
         } catch (error) {
@@ -158,6 +225,7 @@ export function useMQTT() {
     connectionError,
     notifications,
     unreadCount,
+    activePopup,
     connect,
     disconnect,
     clearNotifications,

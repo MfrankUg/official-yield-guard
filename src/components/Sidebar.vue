@@ -62,16 +62,5 @@ const navItems = [
       </router-link>
     </nav>
     
-    <!-- Footer: Auth Options -->
-    <div class="p-6 border-t border-border-soft shrink-0">
-      <div class="flex flex-col space-y-3">
-        <button class="w-full py-2.5 bg-[var(--color-accent-blue)] text-white rounded-xl text-sm font-medium hover:bg-blue-600 transition-colors shadow-sm">
-          Login
-        </button>
-        <button class="w-full py-2.5 bg-base-primary border border-border-soft text-content-primary rounded-xl text-sm font-medium hover:bg-white/5 transition-colors">
-          Sign Up
-        </button>
-      </div>
-    </div>
   </aside>
 </template>

@@ -60,9 +60,7 @@ const percentage = computed(() => {
           <AlertTriangle class="w-3.5 h-3.5" />
           <span class="text-[10px] uppercase tracking-wider font-semibold">Warning</span>
         </div>
-        <div class="text-[10px] uppercase tracking-wider font-semibold text-content-secondary px-2 py-1 bg-base-primary rounded-md border border-border-soft">
-          Live
-        </div>
+
       </div>
     </div>
     
