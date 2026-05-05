@@ -1,6 +1,9 @@
 <script setup>
 import { ref } from 'vue'
-import { Settings as SettingsIcon, Save, Bell, Sliders, Cpu } from 'lucide-vue-next'
+import { Settings as SettingsIcon, Save, Bell, Sliders, Cpu, Globe } from 'lucide-vue-next'
+import { useLanguage } from '../composables/useLanguage'
+
+const { currentLanguage, languages, t } = useLanguage()
 
 const thresholds = ref({
   maxTemp: 25.0,
@@ -50,8 +53,8 @@ const saveSettings = () => {
           <SettingsIcon class="w-6 h-6 text-[var(--color-accent-blue)]" />
         </div>
         <div>
-          <h2 class="text-xl font-bold text-content-primary">System Settings</h2>
-          <p class="text-sm text-content-secondary">Configure alerts and environmental thresholds</p>
+          <h2 class="text-xl font-bold text-content-primary">{{ t('settings.title') }}</h2>
+          <p class="text-sm text-content-secondary">{{ t('settings.sub') }}</p>
         </div>
       </div>
       
@@ -61,7 +64,7 @@ const saveSettings = () => {
         class="hidden sm:flex items-center px-6 py-2.5 bg-[var(--color-accent-blue)] text-white rounded-xl text-sm font-medium hover:bg-blue-600 transition-colors shadow-sm disabled:opacity-70"
       >
         <Save class="w-4 h-4 mr-2" />
-        {{ isSaving ? 'Saving...' : (isSaved ? 'Saved!' : 'Save Changes') }}
+        {{ isSaving ? t('settings.saving') : (isSaved ? t('settings.saved') : t('settings.save')) }}
       </button>
     </div>
 
@@ -69,11 +72,11 @@ const saveSettings = () => {
     <div class="bg-base-secondary rounded-2xl border border-border-soft shadow-sm overflow-hidden">
       <div class="p-6 border-b border-border-soft flex items-center bg-base-primary/30">
         <Sliders class="w-5 h-5 text-content-secondary mr-3" />
-        <h3 class="text-lg font-bold text-content-primary">Environmental Thresholds</h3>
+        <h3 class="text-lg font-bold text-content-primary">{{ t('settings.thresholds') }}</h3>
       </div>
       <div class="p-6">
         <p class="text-sm text-content-secondary mb-6 leading-relaxed">
-          These values determine when the hardware ESP32 triggers alerts. Currently, these are interface-only and must match your flashed hardware constants.
+          {{ t('settings.thresholdsSub') }}
         </p>
         
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -101,7 +104,7 @@ const saveSettings = () => {
     <div class="bg-base-secondary rounded-2xl border border-border-soft shadow-sm overflow-hidden">
       <div class="p-6 border-b border-border-soft flex items-center bg-base-primary/30">
         <Bell class="w-5 h-5 text-content-secondary mr-3" />
-        <h3 class="text-lg font-bold text-content-primary">Alert Preferences</h3>
+        <h3 class="text-lg font-bold text-content-primary">{{ t('settings.alerts') }}</h3>
       </div>
       <div class="p-6 space-y-6">
         <div class="flex items-center justify-between">
@@ -129,6 +132,27 @@ const saveSettings = () => {
 
 
 
+    <!-- Language Settings -->
+    <div class="bg-base-secondary rounded-2xl border border-border-soft shadow-sm overflow-hidden">
+      <div class="p-6 border-b border-border-soft flex items-center bg-base-primary/30">
+        <Globe class="w-5 h-5 text-content-secondary mr-3" />
+        <h3 class="text-lg font-bold text-content-primary">{{ t('settings.langPrefs') }}</h3>
+      </div>
+      <div class="p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h4 class="text-sm font-medium text-content-primary">{{ t('settings.dashLang') }}</h4>
+            <p class="text-xs text-content-secondary mt-1">{{ t('settings.dashLangSub') }}</p>
+          </div>
+          <select v-model="currentLanguage" class="bg-base-primary border border-border-soft rounded-xl px-4 py-2 text-sm font-semibold text-content-primary focus:outline-none focus:border-[var(--color-accent-blue)] transition-colors cursor-pointer min-w-[120px]">
+            <option v-for="lang in languages" :key="lang.code" :value="lang.code">
+              {{ lang.name }} ({{ lang.short }})
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+
     <!-- Mobile Save Button -->
     <button 
       @click="saveSettings"
@@ -136,7 +160,7 @@ const saveSettings = () => {
       class="sm:hidden w-full flex items-center justify-center px-6 py-4 bg-[var(--color-accent-blue)] text-white rounded-xl text-base font-medium hover:bg-blue-600 transition-colors shadow-sm disabled:opacity-70 mt-6"
     >
       <Save class="w-5 h-5 mr-2" />
-      {{ isSaving ? 'Saving...' : (isSaved ? 'Saved!' : 'Save Changes') }}
+      {{ isSaving ? t('settings.saving') : (isSaved ? t('settings.saved') : t('settings.save')) }}
     </button>
 
   </div>

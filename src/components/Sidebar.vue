@@ -1,6 +1,8 @@
 <script setup>
+import { computed } from 'vue'
 import { Sun, History, MessageSquare, Map, Grid, X } from 'lucide-vue-next'
 import { useRoute } from 'vue-router'
+import { useLanguage } from '../composables/useLanguage'
 
 const props = defineProps({
   isOpen: {
@@ -11,14 +13,15 @@ const props = defineProps({
 
 const emit = defineEmits(['close'])
 const route = useRoute()
+const { t } = useLanguage()
 
-const navItems = [
-  { label: 'Live Monitor', icon: Sun, path: '/' },
-  { label: 'History', icon: History, path: '/history' },
-  { label: 'AI Assistant', icon: MessageSquare, path: '/ai-assistant' },
-  { label: 'Warehouse Map', icon: Map, path: '/map' },
-  { label: 'Settings', icon: Grid, path: '/settings' }
-]
+const navItems = computed(() => [
+  { label: t('nav.dashboard'), icon: Sun, path: '/dashboard' },
+  { label: t('nav.history'), icon: History, path: '/history' },
+  { label: t('nav.assistant'), icon: MessageSquare, path: '/ai-assistant' },
+  { label: t('nav.map'), icon: Map, path: '/map' },
+  { label: t('nav.settings'), icon: Grid, path: '/settings' }
+])
 </script>
 
 <template>
@@ -30,7 +33,7 @@ const navItems = [
   >
     <!-- Branding -->
     <div class="h-20 flex items-center justify-between px-6 border-b border-border-soft shrink-0">
-      <div class="flex items-center">
+      <div class="flex items-center cursor-pointer hover:opacity-80 transition-opacity" @click="route.path !== '/' ? $router.push('/') : null">
         <img src="../assets/logo.png" alt="Yield Guard" class="w-8 h-8 rounded-md mr-3" />
         <span class="text-content-primary font-bold text-xl tracking-wide">Yield Guard</span>
       </div>

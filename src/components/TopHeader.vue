@@ -3,10 +3,13 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { Search, Bell, Menu, CheckCircle2, AlertTriangle, Sun, Moon } from 'lucide-vue-next'
 import { useMQTT } from '../composables/useMQTT'
 import { useTheme } from '../composables/useTheme'
+import { useLanguage } from '../composables/useLanguage'
+import LanguageDropdown from './LanguageDropdown.vue'
 
 const emit = defineEmits(['toggle-sidebar'])
 const { notifications, unreadCount, clearNotifications, resetUnreadCount } = useMQTT()
 const { isDarkMode, toggleTheme } = useTheme()
+const { t } = useLanguage()
 
 const currentDateTime = ref('')
 const isDropdownOpen = ref(false)
@@ -65,7 +68,7 @@ onUnmounted(() => {
         <input
           type="text"
           class="block w-full pl-11 pr-4 py-2.5 bg-base-secondary border border-border-soft rounded-xl text-content-primary placeholder-content-secondary focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-blue)] focus:border-transparent transition-all text-sm"
-          placeholder="Select Warehouse / Zone"
+          :placeholder="t('header.search')"
         />
       </div>
     </div>
@@ -73,6 +76,9 @@ onUnmounted(() => {
     <!-- Right side items -->
     <div class="flex items-center space-x-2 sm:space-x-4">
       
+      <!-- Language Dropdown -->
+      <LanguageDropdown class="mr-2" />
+
       <!-- Theme Toggle -->
       <button 
         @click="toggleTheme"
@@ -107,20 +113,20 @@ onUnmounted(() => {
           class="absolute right-0 mt-2 w-80 bg-base-secondary rounded-xl border border-border-soft shadow-2xl z-50 overflow-hidden flex flex-col max-h-[400px]"
         >
           <div class="p-4 border-b border-border-soft flex justify-between items-center bg-base-secondary shrink-0">
-            <h3 class="font-bold text-content-primary">Notifications</h3>
+            <h3 class="font-bold text-content-primary">{{ t('header.notifications') }}</h3>
             <button 
               v-if="notifications.length > 0"
               @click="clearNotifications" 
               class="text-xs text-content-secondary hover:text-[var(--color-accent-blue)] transition-colors"
             >
-              Clear All
+              {{ t('header.clearAll') }}
             </button>
           </div>
           
           <div class="overflow-y-auto flex-1">
             <div v-if="notifications.length === 0" class="p-6 text-center text-content-secondary text-sm flex flex-col items-center">
               <CheckCircle2 class="w-8 h-8 text-green-500/50 mb-2" />
-              All systems optimal. No recent alerts.
+              {{ t('header.allOptimal') }}
             </div>
             
             <div 
