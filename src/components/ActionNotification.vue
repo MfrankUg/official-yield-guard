@@ -1,9 +1,11 @@
 <script setup>
 import { ref } from 'vue'
 import { useMQTT } from '../composables/useMQTT'
+import { useLanguage } from '../composables/useLanguage'
 import { AlertTriangle, Info } from 'lucide-vue-next'
 
 const { activePopup } = useMQTT()
+const { t } = useLanguage()
 
 const closePopup = () => {
   activePopup.value = null
@@ -93,7 +95,7 @@ const onTouchEnd = () => {
           </div>
           <p class="text-xs sm:text-sm text-content-primary font-medium flex items-center mt-1">
             <Info class="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 text-content-secondary" />
-            Action: {{ activePopup.action }}
+            {{ t('popup.action') }}: {{ activePopup.action }}
           </p>
         </div>
       </div>

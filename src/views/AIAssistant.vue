@@ -1,15 +1,17 @@
 <script setup>
-import { ref, onMounted, nextTick, watch } from 'vue'
+import { ref, onMounted, nextTick, watch, computed } from 'vue'
 import { Send, Bot, User, Sparkles, Mic, Loader2 } from 'lucide-vue-next'
 import { useMQTT } from '../composables/useMQTT'
+import { useLanguage } from '../composables/useLanguage'
 
-const { currentTemperature, currentHumidity, currentHeatIndex } = useMQTT()
+const { currentTemperature, currentHumidity } = useMQTT()
+const { t } = useLanguage()
 
 const messages = ref([
   {
     id: 1,
     role: 'ai',
-    content: 'Welcome to the full AI Assistant dashboard. I have full access to your warehouse sensor data. Ask me anything about environmental safety or predictive risks!'
+    content: t('ai.welcome')
   }
 ])
 
@@ -183,8 +185,8 @@ watch(messages, () => {
             <Sparkles class="w-4 h-4 sm:w-5 sm:h-5 text-[var(--color-accent-blue)]" />
           </div>
           <div>
-            <h2 class="text-content-primary font-bold text-base sm:text-lg leading-tight">Yield Guard AI</h2>
-            <p class="text-xs sm:text-sm text-[var(--color-accent-blue)] font-medium mt-0.5">Predictive Environmental Intelligence</p>
+            <h2 class="text-content-primary font-bold text-base sm:text-lg leading-tight">{{ t('ai.title') }}</h2>
+            <p class="text-xs sm:text-sm text-[var(--color-accent-blue)] font-medium mt-0.5">{{ t('ai.sub') }}</p>
           </div>
         </div>
       </div>
@@ -241,7 +243,7 @@ watch(messages, () => {
           <input 
             v-model="inputMessage"
             type="text" 
-            :placeholder="isRecording ? 'Listening...' : 'Ask AI...'"
+            :placeholder="isRecording ? t('ai.listening') : t('ai.placeholder')"
             :disabled="isRecording"
             class="w-full bg-base-primary border border-border-soft rounded-2xl pl-4 pr-24 sm:pl-6 sm:pr-28 py-3 sm:py-4 text-[14px] sm:text-[15px] text-content-primary placeholder-content-secondary focus:outline-none focus:border-[var(--color-accent-blue)] focus:ring-1 focus:ring-[var(--color-accent-blue)] transition-all shadow-inner disabled:opacity-70"
           />

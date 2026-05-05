@@ -12,6 +12,7 @@ import {
   Filler
 } from 'chart.js'
 import { Line } from 'vue-chartjs'
+import { useLanguage } from '../composables/useLanguage'
 
 ChartJS.register(
   CategoryScale,
@@ -23,6 +24,8 @@ ChartJS.register(
   Legend,
   Filler
 )
+
+const { t } = useLanguage()
 
 const props = defineProps({
   chartData: {
@@ -101,7 +104,7 @@ const options = {
       ticks: {
         color: '#8b949e',
         callback: function(value) {
-          return value + '°C';
+          return Number(value).toFixed(1) + '°C';
         }
       }
     },
@@ -115,7 +118,7 @@ const options = {
       ticks: {
         color: '#8b949e',
         callback: function(value) {
-          return value + '%';
+          return Number(value).toFixed(1) + '%';
         }
       }
     }
@@ -126,12 +129,12 @@ const options = {
 <template>
   <div class="bg-base-secondary rounded-2xl border border-border-soft p-6 shadow-sm h-full flex flex-col">
     <div class="flex items-center justify-between mb-4">
-      <h3 class="text-content-primary font-semibold">72h Detailed Warehouse Conditions</h3>
+      <h3 class="text-content-primary font-semibold">{{ t('chart.title') }}</h3>
       <div class="flex items-center space-x-2">
         <span class="w-3 h-3 rounded-full bg-[var(--color-accent-blue)]"></span>
-        <span class="text-xs text-content-secondary">Temp</span>
+        <span class="text-xs text-content-secondary">{{ t('chart.temp') }}</span>
         <span class="w-3 h-3 rounded-full bg-[var(--color-accent-red)] ml-3"></span>
-        <span class="text-xs text-content-secondary">Humidity</span>
+        <span class="text-xs text-content-secondary">{{ t('chart.humidity') }}</span>
       </div>
     </div>
     <div class="flex-1 relative">

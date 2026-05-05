@@ -1,33 +1,33 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { MapPin, Box, Thermometer, Droplet, Flame } from 'lucide-vue-next'
+import { ref, computed } from 'vue'
+import { MapPin, Box, Thermometer, Droplet } from 'lucide-vue-next'
 import { useMQTT } from '../composables/useMQTT'
+import { useLanguage } from '../composables/useLanguage'
 import MetricCard from '../components/MetricCard.vue'
 
-const { currentTemperature, currentHumidity, currentHeatIndex } = useMQTT()
+const { currentTemperature, currentHumidity } = useMQTT()
+const { t } = useLanguage()
 
 const selectedZone = ref('zone-a')
 
-const zones = [
-  { id: 'zone-a', name: 'Zone A: Main Coffee Storage', color: 'border-[var(--color-accent-blue)]' },
-  { id: 'zone-b', name: 'Zone B: Sorting & Processing', color: 'border-green-500' },
-  { id: 'zone-c', name: 'Zone C: Packaging', color: 'border-[var(--color-accent-red)]' }
-]
+const zones = computed(() => [
+  { id: 'zone-a', name: t('map.zoneA'), color: 'border-[var(--color-accent-blue)]' },
+  { id: 'zone-b', name: t('map.zoneB'), color: 'border-green-500' },
+  { id: 'zone-c', name: t('map.zoneC'), color: 'border-[var(--color-accent-red)]' }
+])
 
 const activeZoneData = computed(() => {
   if (selectedZone.value === 'zone-a') {
     return {
       temp: currentTemperature.value !== null ? currentTemperature.value : '--',
       hum: currentHumidity.value !== null ? currentHumidity.value : '--',
-      heat: currentHeatIndex.value !== null ? currentHeatIndex.value : '--',
-      status: currentTemperature.value !== null ? 'Live Data' : 'Waiting for data...'
+      status: currentTemperature.value !== null ? t('map.liveData') : t('map.waitingData')
     }
   } else {
     return {
       temp: '--',
       hum: '--',
-      heat: '--',
-      status: 'Offline / No Sensor'
+      status: t('map.offline')
     }
   }
 })
@@ -59,13 +59,13 @@ const getZoneClass = (zoneId) => {
           <MapPin class="w-5 h-5 text-[var(--color-accent-blue)]" />
         </div>
         <div>
-          <h2 class="text-xl font-bold text-content-primary">Warehouse Map</h2>
-          <p class="text-sm text-content-secondary">Facility Overview & Zone Monitoring</p>
+          <h2 class="text-xl font-bold text-content-primary">{{ t('map.title') }}</h2>
+          <p class="text-sm text-content-secondary">{{ t('map.sub') }}</p>
         </div>
       </div>
       
       <div class="w-full sm:w-64">
-        <label class="block text-xs font-medium text-content-secondary mb-1">Select Zone</label>
+        <label class="block text-xs font-medium text-content-secondary mb-1">{{ t('map.selectZone') }}</label>
         <select 
           v-model="selectedZone"
           class="w-full bg-base-primary border border-border-soft rounded-xl px-4 py-2.5 text-sm text-content-primary focus:outline-none focus:border-[var(--color-accent-blue)] focus:ring-1 focus:ring-[var(--color-accent-blue)] transition-colors cursor-pointer appearance-none"
@@ -85,7 +85,7 @@ const getZoneClass = (zoneId) => {
         
         <!-- Interactive Floorplan -->
         <div class="bg-base-secondary rounded-2xl border border-border-soft p-6 shadow-sm">
-          <h3 class="text-lg font-bold text-content-primary mb-6">Interactive Floorplan</h3>
+          <h3 class="text-lg font-bold text-content-primary mb-6">{{ t('map.floorplan') }}</h3>
           
           <!-- CSS Grid Map representation -->
           <div class="grid grid-cols-2 grid-rows-2 gap-4 h-[400px]">
@@ -96,11 +96,11 @@ const getZoneClass = (zoneId) => {
             >
               <div class="absolute top-4 right-4 flex items-center space-x-2">
                 <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                <span class="text-xs font-medium text-content-secondary">Active Sensor</span>
+                <span class="text-xs font-medium text-content-secondary">{{ t('map.activeSensor') }}</span>
               </div>
               <Box class="w-8 h-8 mb-3 opacity-80" :class="selectedZone === 'zone-a' ? 'text-[var(--color-accent-blue)]' : 'text-content-secondary'" />
               <span class="font-bold text-lg text-content-primary tracking-wide">ZONE A</span>
-              <span class="text-sm text-content-secondary mt-1">Main Coffee Storage</span>
+              <span class="text-sm text-content-secondary mt-1">{{ t('map.zoneA').replace('Zone A: ', '') }}</span>
             </div>
             
             <!-- Zone B -->
@@ -110,7 +110,7 @@ const getZoneClass = (zoneId) => {
             >
               <Box class="w-8 h-8 mb-3 opacity-80" :class="selectedZone === 'zone-b' ? 'text-green-500' : 'text-content-secondary'" />
               <span class="font-bold text-lg text-content-primary tracking-wide">ZONE B</span>
-              <span class="text-sm text-content-secondary mt-1">Sorting & Processing</span>
+              <span class="text-sm text-content-secondary mt-1">{{ t('map.zoneB').replace('Zone B: ', '').replace('Kanda B: ', '').replace('Ekitundu B: ', '') }}</span>
             </div>
 
             <!-- Zone C -->
@@ -118,11 +118,9 @@ const getZoneClass = (zoneId) => {
               @click="selectedZone = 'zone-c'"
               :class="getZoneClass('zone-c')"
             >
-              <div class="absolute top-4 right-4 flex items-center space-x-2" v-if="selectedZone !== 'zone-c'">
-              </div>
               <Box class="w-8 h-8 mb-3 opacity-80" :class="selectedZone === 'zone-c' ? 'text-[var(--color-accent-red)]' : 'text-content-secondary'" />
               <span class="font-bold text-lg text-content-primary tracking-wide">ZONE C</span>
-              <span class="text-sm text-content-secondary mt-1 text-center">Packaging</span>
+              <span class="text-sm text-content-secondary mt-1 text-center">{{ t('map.zoneC').replace('Zone C: ', '').replace('Kanda C: ', '').replace('Ekitundu C: ', '') }}</span>
             </div>
           </div>
         </div>
@@ -130,10 +128,10 @@ const getZoneClass = (zoneId) => {
         <!-- Realtime Location Map -->
         <div class="bg-base-secondary rounded-2xl border border-border-soft p-6 shadow-sm">
           <div class="flex items-center justify-between mb-6">
-            <h3 class="text-lg font-bold text-content-primary">Geographic Location</h3>
+            <h3 class="text-lg font-bold text-content-primary">{{ t('map.geoLocation') }}</h3>
             <span class="flex items-center text-xs font-medium text-green-500 bg-green-500/10 px-2.5 py-1 rounded-full border border-green-500/20">
               <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse mr-1.5"></span>
-              Live GPS Tracking
+              {{ t('map.liveGPS') }}
             </span>
           </div>
           <div class="h-[300px] w-full rounded-xl overflow-hidden border border-border-soft bg-base-primary">
@@ -167,7 +165,7 @@ const getZoneClass = (zoneId) => {
 
           <div class="space-y-4">
             <MetricCard 
-              title="Temperature"
+              :title="t('card.temperature')"
               :icon="Thermometer"
               :value="activeZoneData.temp"
               unit="°C"
@@ -176,7 +174,7 @@ const getZoneClass = (zoneId) => {
               colorClass="bg-[var(--color-accent-blue)]"
             />
             <MetricCard 
-              title="Humidity"
+              :title="t('card.humidity')"
               :icon="Droplet"
               :value="activeZoneData.hum"
               unit="%"

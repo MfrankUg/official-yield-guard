@@ -3,16 +3,20 @@ import { computed, ref } from 'vue'
 import { Activity, Clock, AlertTriangle, CheckCircle2, Download, FileText, Database } from 'lucide-vue-next'
 import { useMQTT } from '../composables/useMQTT'
 import { useExport } from '../composables/useExport'
+import { useLanguage } from '../composables/useLanguage'
 import ConditionChart from '../components/ConditionChart.vue'
 
 const { historicalDataPoints, notifications } = useMQTT()
 const { downloadCSV, downloadPDF } = useExport()
+const { t } = useLanguage()
 
 const exportTimeframeEnv = ref('1day')
 const exportTimeframeLogs = ref('1day')
 
 const isEnvMenuOpen = ref(false)
 const isLogsMenuOpen = ref(false)
+
+
 
 const handleEnvExport = (format) => {
   if (format === 'csv') {
@@ -112,8 +116,8 @@ const chartData = computed(() => {
           <Activity class="w-6 h-6 text-[var(--color-accent-blue)]" />
         </div>
         <div>
-          <h2 class="text-xl font-bold text-content-primary">System History</h2>
-          <p class="text-sm text-content-secondary">Historical logs and environmental trends</p>
+          <h2 class="text-xl font-bold text-content-primary">{{ t('history.title') }}</h2>
+          <p class="text-sm text-content-secondary">{{ t('history.sub') }}</p>
         </div>
       </div>
     </div>
@@ -127,8 +131,8 @@ const chartData = computed(() => {
             <Database class="w-5 h-5 text-[var(--color-accent-blue)]" />
           </div>
           <div>
-            <h3 class="text-sm font-bold text-content-primary">Environmental Data</h3>
-            <p class="text-xs text-content-secondary">Historical logs export</p>
+            <h3 class="text-sm font-bold text-content-primary">{{ t('history.envData') }}</h3>
+            <p class="text-xs text-content-secondary">{{ t('history.envDataSub') }}</p>
           </div>
         </div>
         
@@ -137,7 +141,7 @@ const chartData = computed(() => {
           class="flex items-center px-4 py-2 bg-[var(--color-accent-blue)] text-white text-sm font-medium rounded-xl hover:bg-blue-600 transition-colors shadow-sm"
         >
           <Download class="w-4 h-4 mr-2" />
-          Export
+          {{ t('dash.export') }}
         </button>
 
         <!-- Dropdown Menu -->
@@ -146,14 +150,14 @@ const chartData = computed(() => {
           class="absolute right-0 top-full mt-2 w-56 bg-base-secondary rounded-xl border border-border-soft shadow-2xl z-50 overflow-hidden"
         >
           <div class="p-3 border-b border-border-soft">
-            <label class="block text-xs font-medium text-content-secondary mb-1">Timeframe</label>
+            <label class="block text-xs font-medium text-content-secondary mb-1">{{ t('dash.timeframe') }}</label>
             <select 
               v-model="exportTimeframeEnv"
               class="w-full bg-base-primary border border-border-soft rounded-lg px-2 py-1.5 text-sm text-content-primary focus:outline-none focus:border-[var(--color-accent-blue)]"
             >
-              <option value="1day">Last 24 Hours</option>
-              <option value="1week">Last 7 Days</option>
-              <option value="1month">Last 30 Days</option>
+              <option value="1day">{{ t('dash.last24h') }}</option>
+              <option value="1week">{{ t('dash.last7d') }}</option>
+              <option value="1month">{{ t('dash.last30d') }}</option>
             </select>
           </div>
           <div class="p-2 space-y-1">
@@ -162,14 +166,14 @@ const chartData = computed(() => {
               class="w-full flex items-center px-3 py-2 text-sm text-content-primary hover:bg-base-primary rounded-lg transition-colors"
             >
               <Database class="w-4 h-4 mr-2 text-[var(--color-accent-blue)]" />
-              Download CSV
+              {{ t('dash.downloadCSV') }}
             </button>
             <button 
               @click="handleEnvExport('pdf')"
               class="w-full flex items-center px-3 py-2 text-sm text-content-primary hover:bg-base-primary rounded-lg transition-colors"
             >
               <FileText class="w-4 h-4 mr-2 text-[var(--color-accent-red)]" />
-              Download PDF
+              {{ t('dash.downloadPDF') }}
             </button>
           </div>
         </div>
@@ -183,8 +187,8 @@ const chartData = computed(() => {
             <FileText class="w-5 h-5 text-[var(--color-accent-red)]" />
           </div>
           <div>
-            <h3 class="text-sm font-bold text-content-primary">Alert Event Logs</h3>
-            <p class="text-xs text-content-secondary">Historical alerts export</p>
+            <h3 class="text-sm font-bold text-content-primary">{{ t('history.alertLogs') }}</h3>
+            <p class="text-xs text-content-secondary">{{ t('history.alertLogsSub') }}</p>
           </div>
         </div>
         
@@ -193,7 +197,7 @@ const chartData = computed(() => {
           class="flex items-center px-4 py-2 bg-base-primary border border-border-soft text-content-primary text-sm font-medium rounded-xl hover:bg-base-primary/50 transition-colors"
         >
           <Download class="w-4 h-4 mr-2 text-[var(--color-accent-red)]" />
-          Export
+          {{ t('dash.export') }}
         </button>
 
         <!-- Dropdown Menu -->
@@ -202,14 +206,14 @@ const chartData = computed(() => {
           class="absolute right-0 top-full mt-2 w-56 bg-base-secondary rounded-xl border border-border-soft shadow-2xl z-50 overflow-hidden"
         >
           <div class="p-3 border-b border-border-soft">
-            <label class="block text-xs font-medium text-content-secondary mb-1">Timeframe</label>
+            <label class="block text-xs font-medium text-content-secondary mb-1">{{ t('dash.timeframe') }}</label>
             <select 
               v-model="exportTimeframeLogs"
               class="w-full bg-base-primary border border-border-soft rounded-lg px-2 py-1.5 text-sm text-content-primary focus:outline-none focus:border-[var(--color-accent-blue)]"
             >
-              <option value="1day">Last 24 Hours</option>
-              <option value="1week">Last 7 Days</option>
-              <option value="1month">Last 30 Days</option>
+              <option value="1day">{{ t('dash.last24h') }}</option>
+              <option value="1week">{{ t('dash.last7d') }}</option>
+              <option value="1month">{{ t('dash.last30d') }}</option>
             </select>
           </div>
           <div class="p-2 space-y-1">
@@ -218,14 +222,14 @@ const chartData = computed(() => {
               class="w-full flex items-center px-3 py-2 text-sm text-content-primary hover:bg-base-primary rounded-lg transition-colors"
             >
               <Database class="w-4 h-4 mr-2 text-[var(--color-accent-blue)]" />
-              Download CSV
+              {{ t('dash.downloadCSV') }}
             </button>
             <button 
               @click="handleLogsExport('pdf')"
               class="w-full flex items-center px-3 py-2 text-sm text-content-primary hover:bg-base-primary rounded-lg transition-colors"
             >
               <FileText class="w-4 h-4 mr-2 text-[var(--color-accent-red)]" />
-              Download PDF
+              {{ t('dash.downloadPDF') }}
             </button>
           </div>
         </div>
@@ -236,10 +240,10 @@ const chartData = computed(() => {
     <!-- Main Chart -->
     <div class="bg-base-secondary rounded-2xl border border-border-soft p-6 shadow-sm">
       <div class="flex items-center justify-between mb-6">
-        <h3 class="text-lg font-bold text-content-primary">72-Hour Condition Trends</h3>
+        <h3 class="text-lg font-bold text-content-primary">{{ t('history.conditionTrends') }}</h3>
         <div class="px-3 py-1 bg-base-primary rounded-lg border border-border-soft text-xs text-content-secondary font-medium flex items-center">
           <Clock class="w-3 h-3 mr-1.5" />
-          Live Updating
+          {{ t('history.liveUpdating') }}
         </div>
       </div>
       <div class="h-[400px] w-full">
@@ -250,17 +254,17 @@ const chartData = computed(() => {
     <!-- Alert Log -->
     <div class="bg-base-secondary rounded-2xl border border-border-soft shadow-sm overflow-hidden">
       <div class="p-6 border-b border-border-soft flex justify-between items-center bg-base-secondary">
-        <h3 class="text-lg font-bold text-content-primary">Alert Event Log</h3>
-        <span class="text-sm font-medium text-[var(--color-accent-blue)]">{{ notifications.length }} Records</span>
+        <h3 class="text-lg font-bold text-content-primary">{{ t('history.alertEventLog') }}</h3>
+        <span class="text-sm font-medium text-[var(--color-accent-blue)]">{{ notifications.length }} {{ t('history.records') }}</span>
       </div>
       
       <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
           <thead>
             <tr class="bg-base-primary/50 text-xs text-content-secondary uppercase tracking-wider border-b border-border-soft">
-              <th class="px-6 py-4 font-medium">Time</th>
-              <th class="px-6 py-4 font-medium">Event Type</th>
-              <th class="px-6 py-4 font-medium">Message</th>
+              <th class="px-6 py-4 font-medium">{{ t('history.time') }}</th>
+              <th class="px-6 py-4 font-medium">{{ t('history.eventType') }}</th>
+              <th class="px-6 py-4 font-medium">{{ t('history.message') }}</th>
             </tr>
           </thead>
           <tbody v-if="notifications.length > 0">
@@ -273,7 +277,7 @@ const chartData = computed(() => {
               <td class="px-6 py-4 whitespace-nowrap">
                 <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-[var(--color-accent-red)]/10 text-[var(--color-accent-red)] border border-[var(--color-accent-red)]/20">
                   <AlertTriangle class="w-3 h-3 mr-1" />
-                  System Alert
+                  {{ t('history.systemAlert') }}
                 </span>
               </td>
               <td class="px-6 py-4 text-sm text-content-primary font-medium">{{ note.message }}</td>
@@ -284,7 +288,7 @@ const chartData = computed(() => {
               <td colspan="3" class="px-6 py-12 text-center text-content-secondary">
                 <div class="flex flex-col items-center justify-center">
                   <CheckCircle2 class="w-10 h-10 text-green-500/50 mb-3" />
-                  <p class="text-sm">No historical alerts recorded. Systems have remained optimal.</p>
+                  <p class="text-sm">{{ t('history.noAlerts') }}</p>
                 </div>
               </td>
             </tr>

@@ -1,6 +1,9 @@
 <script setup>
 import { computed } from 'vue'
 import { AlertTriangle } from 'lucide-vue-next'
+import { useLanguage } from '../composables/useLanguage'
+
+const { t } = useLanguage()
 
 const props = defineProps({
   title: {
@@ -59,15 +62,15 @@ const percentage = computed(() => {
       <div class="flex items-center space-x-2">
         <div v-if="status === 'danger'" class="flex items-center space-x-1 text-white animate-pulse bg-[var(--color-accent-red)] px-2.5 py-1 rounded-md shadow-sm shadow-[var(--color-accent-red)]/30">
           <AlertTriangle class="w-3.5 h-3.5" />
-          <span class="text-[10px] uppercase tracking-wider font-bold">Danger</span>
+          <span class="text-[10px] uppercase tracking-wider font-bold">{{ t('card.danger') }}</span>
         </div>
         <div v-else-if="status === 'warning'" class="flex items-center space-x-1 text-white bg-orange-500 px-2.5 py-1 rounded-md shadow-sm shadow-orange-500/30">
           <AlertTriangle class="w-3.5 h-3.5" />
-          <span class="text-[10px] uppercase tracking-wider font-bold">Warning</span>
+          <span class="text-[10px] uppercase tracking-wider font-bold">{{ t('card.warning') }}</span>
         </div>
         <div v-else-if="status === 'normal'" class="flex items-center space-x-1 text-[var(--color-accent-blue)] bg-[var(--color-accent-blue)]/10 px-2.5 py-1 rounded-md border border-[var(--color-accent-blue)]/20">
           <div class="w-1.5 h-1.5 rounded-full bg-[var(--color-accent-blue)]"></div>
-          <span class="text-[10px] uppercase tracking-wider font-bold">Normal</span>
+          <span class="text-[10px] uppercase tracking-wider font-bold">{{ t('card.normal') }}</span>
         </div>
       </div>
     </div>
@@ -80,8 +83,8 @@ const percentage = computed(() => {
     <!-- Optimal Range Bar -->
     <div class="space-y-2">
       <div class="flex justify-between text-xs text-content-secondary font-medium">
-        <span>Optimal Min: {{ optimalMin }}{{ unit }}</span>
-        <span>Optimal Max: {{ optimalMax }}{{ unit }}</span>
+        <span>{{ t('card.optimalMin') }}: {{ optimalMin }}{{ unit }}</span>
+        <span>{{ t('card.optimalMax') }}: {{ optimalMax }}{{ unit }}</span>
       </div>
       <div class="h-2 w-full bg-base-primary rounded-full overflow-hidden border border-border-soft relative">
         <!-- Range indicators / visual bar -->
