@@ -1,12 +1,46 @@
 <script setup>
-import { computed } from 'vue'
+import { ref } from 'vue'
 import { useMQTT } from '../composables/useMQTT'
-import { AlertTriangle, Info, X } from 'lucide-vue-next'
+import { AlertTriangle, Info } from 'lucide-vue-next'
 
 const { activePopup } = useMQTT()
 
 const closePopup = () => {
   activePopup.value = null
+}
+
+const startX = ref(0)
+const currentX = ref(0)
+const isDragging = ref(false)
+
+const onTouchStart = (e) => {
+  startX.value = e.touches ? e.touches[0].clientX : e.clientX
+  isDragging.value = true
+}
+
+const onTouchMove = (e) => {
+  if (!isDragging.value) return
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX
+  currentX.value = clientX - startX.value
+}
+
+const onTouchEnd = () => {
+  if (!isDragging.value) return
+  isDragging.value = false
+  
+  // If swiped more than 80px left or right, dismiss it
+  if (Math.abs(currentX.value) > 80) {
+    const direction = currentX.value > 0 ? window.innerWidth : -window.innerWidth
+    currentX.value = direction
+    setTimeout(() => {
+      closePopup()
+      // Reset translation after it is closed so the next popup starts fresh
+      setTimeout(() => { currentX.value = 0 }, 300)
+    }, 150) // wait for it to fly off screen
+  } else {
+    // Snap back to center
+    currentX.value = 0
+  }
 }
 </script>
 
@@ -24,8 +58,19 @@ const closePopup = () => {
       class="fixed top-4 left-0 right-0 z-[200] flex justify-center pointer-events-none px-4"
     >
       <div 
-        class="pointer-events-auto w-full max-w-lg md:max-w-2xl bg-base-secondary rounded-2xl shadow-2xl border-2 flex overflow-hidden relative"
-        :class="activePopup.severity === 'danger' ? 'border-[var(--color-accent-red)]' : 'border-yellow-500'"
+        class="pointer-events-auto w-full max-w-lg md:max-w-2xl bg-base-secondary rounded-2xl shadow-2xl border-2 flex overflow-hidden relative cursor-grab active:cursor-grabbing"
+        :class="[
+          activePopup.severity === 'danger' ? 'border-[var(--color-accent-red)]' : 'border-yellow-500',
+          !isDragging ? 'transition-all duration-300' : ''
+        ]"
+        :style="currentX ? { transform: `translateX(${currentX}px)`, opacity: 1 - Math.abs(currentX)/300 } : {}"
+        @touchstart="onTouchStart"
+        @touchmove="onTouchMove"
+        @touchend="onTouchEnd"
+        @mousedown="onTouchStart"
+        @mousemove="onTouchMove"
+        @mouseup="onTouchEnd"
+        @mouseleave="onTouchEnd"
       >
         <!-- Icon Side -->
         <div 

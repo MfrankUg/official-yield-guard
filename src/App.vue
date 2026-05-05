@@ -62,11 +62,15 @@ onUnmounted(() => {
       </div>
 
       <div 
-        class="flex-1"
-        :class="route.path === '/ai-assistant' ? 'p-0 overflow-hidden flex flex-col' : 'p-4 sm:p-8 overflow-y-auto'"
+        class="flex-1 relative"
+        :class="route.path === '/ai-assistant' ? 'p-0 overflow-hidden flex flex-col' : 'p-4 sm:p-8 overflow-y-auto overflow-x-hidden'"
       >
         <!-- Render current route -->
-        <router-view></router-view>
+        <router-view v-slot="{ Component }">
+          <transition name="page-slide" mode="out-in">
+            <component :is="Component" />
+          </transition>
+        </router-view>
       </div>
       
       <!-- Floating AI Assistant (Hidden on full AI Assistant page) -->
@@ -91,5 +95,21 @@ onUnmounted(() => {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-content-secondary); 
+}
+
+/* Page Transitions */
+.page-slide-enter-active,
+.page-slide-leave-active {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.page-slide-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.page-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
 }
 </style>
