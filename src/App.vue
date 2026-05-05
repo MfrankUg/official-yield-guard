@@ -67,7 +67,7 @@ onUnmounted(() => {
       >
         <!-- Render current route -->
         <router-view v-slot="{ Component }">
-          <transition name="page-slide" mode="out-in">
+          <transition name="page-slide">
             <component :is="Component" />
           </transition>
         </router-view>
@@ -98,9 +98,13 @@ onUnmounted(() => {
 }
 
 /* Page Transitions */
-.page-slide-enter-active,
+.page-slide-enter-active {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
 .page-slide-leave-active {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  position: absolute;
+  width: 100%;
 }
 
 .page-slide-enter-from {
