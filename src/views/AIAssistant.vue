@@ -18,62 +18,67 @@ const chatContainer = ref(null)
 const isTyping = ref(false)
 
 const isRecording = ref(false)
-const isTranscribing = ref(false)
-let mediaRecorder = null
-let audioChunks = []
+let recognition = null
+let baseMessage = ''
 
-const toggleRecording = async () => {
-  if (isRecording.value) {
-    mediaRecorder.stop()
+const toggleRecording = () => {
+  if (isRecording.value && recognition) {
+    recognition.stop()
     isRecording.value = false
     return
   }
 
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-    mediaRecorder = new MediaRecorder(stream)
-    audioChunks = []
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    alert('Speech recognition is not supported in this browser. Please use Chrome, Edge, or Safari.')
+    return
+  }
 
-    mediaRecorder.ondataavailable = (e) => {
-      if (e.data.size > 0) audioChunks.push(e.data)
+  if (!recognition) {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+    recognition = new SpeechRecognition()
+    recognition.continuous = false // Stops automatically when user stops speaking
+    recognition.interimResults = true
+
+    recognition.onstart = () => {
+      isRecording.value = true
+      baseMessage = inputMessage.value ? inputMessage.value + ' ' : ''
     }
 
-    mediaRecorder.onstop = async () => {
-      stream.getTracks().forEach(track => track.stop())
-      isTranscribing.value = true
-      
-      const audioBlob = new Blob(audioChunks, { type: 'audio/webm' })
-      const file = new File([audioBlob], 'recording.webm', { type: 'audio/webm' })
-      
-      const formData = new FormData()
-      formData.append('file', file)
-      formData.append('model', 'whisper-large-v3')
+    recognition.onresult = (event) => {
+      let interimTranscript = ''
+      let finalTranscript = ''
 
-      try {
-        const response = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`
-          },
-          body: formData
-        })
-        
-        if (!response.ok) throw new Error('Transcription failed')
-        const data = await response.json()
-        inputMessage.value += (inputMessage.value ? ' ' : '') + data.text.trim()
-      } catch (err) {
-        console.error('Transcription error:', err)
-        alert('Failed to transcribe audio. Please check your microphone or API key.')
-      } finally {
-        isTranscribing.value = false
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          finalTranscript += event.results[i][0].transcript
+        } else {
+          interimTranscript += event.results[i][0].transcript
+        }
+      }
+      
+      inputMessage.value = baseMessage + finalTranscript + interimTranscript
+      if (finalTranscript) {
+        baseMessage += finalTranscript
       }
     }
 
-    mediaRecorder.start()
-    isRecording.value = true
-  } catch (err) {
-    console.error('Microphone access denied', err)
-    alert('Please allow microphone permissions to use voice chat.')
+    recognition.onerror = (event) => {
+      console.error('Speech recognition error:', event.error)
+      if (event.error !== 'aborted') {
+         alert('Microphone error: ' + event.error)
+      }
+      isRecording.value = false
+    }
+
+    recognition.onend = () => {
+      isRecording.value = false
+    }
+  }
+
+  try {
+    recognition.start()
+  } catch(e) {
+    console.error('Could not start recognition:', e)
   }
 }
 
@@ -233,24 +238,23 @@ watch(messages, () => {
           <input 
             v-model="inputMessage"
             type="text" 
-            :placeholder="isRecording ? 'Listening...' : (isTranscribing ? 'Transcribing...' : 'Ask AI...')"
-            :disabled="isRecording || isTranscribing"
+            :placeholder="isRecording ? 'Listening...' : 'Ask AI...'"
+            :disabled="isRecording"
             class="w-full bg-base-primary border border-border-soft rounded-2xl pl-4 pr-24 sm:pl-6 sm:pr-28 py-3 sm:py-4 text-[14px] sm:text-[15px] text-content-primary placeholder-content-secondary focus:outline-none focus:border-[var(--color-accent-blue)] focus:ring-1 focus:ring-[var(--color-accent-blue)] transition-all shadow-inner disabled:opacity-70"
           />
           <div class="absolute right-2 sm:right-3 flex items-center space-x-1 sm:space-x-2">
             <button 
               type="button"
               @click="toggleRecording"
-              :disabled="isTranscribing || isTyping"
+              :disabled="isTyping"
               class="p-2 sm:p-3 rounded-xl transition-colors disabled:opacity-50 flex items-center justify-center"
               :class="isRecording ? 'bg-[var(--color-accent-red)] text-white animate-pulse' : 'bg-base-secondary text-content-secondary hover:text-[var(--color-accent-blue)] hover:bg-[var(--color-accent-blue)]/10'"
             >
-              <Loader2 v-if="isTranscribing" class="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
-              <Mic v-else class="w-4 h-4 sm:w-5 sm:h-5" />
+              <Mic class="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
             <button 
               type="submit"
-              :disabled="!inputMessage.trim() || isTyping || isRecording || isTranscribing"
+              :disabled="!inputMessage.trim() || isTyping || isRecording"
               class="p-2 sm:p-3 bg-[var(--color-accent-blue)] text-white rounded-xl hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
             >
               <Send class="w-4 h-4 sm:w-5 sm:h-5" />
