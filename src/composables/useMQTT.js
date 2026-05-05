@@ -30,7 +30,7 @@ const evaluateActionableInsights = (temp, hum) => {
   const alerts = []
 
   // Check Humidity
-  if (hum > 70) {
+  if (hum >= 70) {
     alerts.push({ severity: 'danger', message: `Danger: Critical Humidity (${hum.toFixed(1)}%). High mold risk.`, action: 'Open ventilations or start dehumidifiers immediately.' })
   } else if (hum > 65) {
     alerts.push({ severity: 'warning', message: `Warning: High Humidity (${hum.toFixed(1)}%).`, action: 'Monitor closely and consider ventilation.' })
@@ -41,9 +41,9 @@ const evaluateActionableInsights = (temp, hum) => {
   }
 
   // Check Temperature independently
-  if (temp > 26) {
+  if (temp >= 30) {
     alerts.push({ severity: 'danger', message: `Danger: Critical High Temperature (${temp.toFixed(1)}°C). Quality loss risk.`, action: 'Turn on cooling systems immediately.' })
-  } else if (temp > 24) {
+  } else if (temp >= 25) {
     alerts.push({ severity: 'warning', message: `Warning: High Temperature (${temp.toFixed(1)}°C).`, action: 'Ensure proper air circulation.' })
   } else if (temp < 10) {
     alerts.push({ severity: 'danger', message: `Danger: Critical Low Temperature (${temp.toFixed(1)}°C). Freezing risk.`, action: 'Turn on heating systems immediately.' })

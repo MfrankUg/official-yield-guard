@@ -64,17 +64,21 @@ const optimalTempMax = 24
 const optimalHumMin = 40
 const optimalHumMax = 65
 
-// Warning logic based on optimal coffee storage
-const tempWarning = computed(() => {
-  if (currentTemperature.value === null) return false
+// Logic based on optimal coffee storage and user requests
+const tempStatus = computed(() => {
+  if (currentTemperature.value === null) return 'normal'
   const temp = Number(currentTemperature.value)
-  return temp > 24 || temp < 15
+  if (temp >= 30 || temp < 10) return 'danger'
+  if (temp >= 25 || temp < 15) return 'warning'
+  return 'normal'
 })
 
-const humWarning = computed(() => {
-  if (currentHumidity.value === null) return false
+const humStatus = computed(() => {
+  if (currentHumidity.value === null) return 'normal'
   const hum = Number(currentHumidity.value)
-  return hum > 65 || hum < 40
+  if (hum >= 70 || hum < 30) return 'danger'
+  if (hum > 65 || hum < 40) return 'warning'
+  return 'normal'
 })
 
 </script>
@@ -155,7 +159,7 @@ const humWarning = computed(() => {
           :optimalMin="optimalTempMin"
           :optimalMax="optimalTempMax"
           colorClass="bg-[var(--color-accent-blue)]"
-          :warning="tempWarning"
+          :status="tempStatus"
         />
         <MetricCard 
           title="Relative Humidity"
@@ -165,7 +169,7 @@ const humWarning = computed(() => {
           :optimalMin="optimalHumMin"
           :optimalMax="optimalHumMax"
           colorClass="bg-[var(--color-accent-red)]"
-          :warning="humWarning"
+          :status="humStatus"
         />
       </div>
 

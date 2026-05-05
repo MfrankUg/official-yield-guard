@@ -32,9 +32,10 @@ const props = defineProps({
     type: String,
     default: 'bg-[var(--color-accent-blue)]'
   },
-  warning: {
-    type: Boolean,
-    default: false
+  status: {
+    type: String,
+    default: 'normal',
+    validator: (value) => ['normal', 'warning', 'danger'].includes(value)
   }
 })
 
@@ -56,11 +57,18 @@ const percentage = computed(() => {
         <h3 class="text-content-secondary font-medium">{{ title }}</h3>
       </div>
       <div class="flex items-center space-x-2">
-        <div v-if="warning" class="flex items-center space-x-1 text-[var(--color-accent-red)] animate-pulse bg-[var(--color-accent-red)]/10 px-2 py-1 rounded-md border border-[var(--color-accent-red)]/20">
+        <div v-if="status === 'danger'" class="flex items-center space-x-1 text-white animate-pulse bg-[var(--color-accent-red)] px-2.5 py-1 rounded-md shadow-sm shadow-[var(--color-accent-red)]/30">
           <AlertTriangle class="w-3.5 h-3.5" />
-          <span class="text-[10px] uppercase tracking-wider font-semibold">Warning</span>
+          <span class="text-[10px] uppercase tracking-wider font-bold">Danger</span>
         </div>
-
+        <div v-else-if="status === 'warning'" class="flex items-center space-x-1 text-white bg-orange-500 px-2.5 py-1 rounded-md shadow-sm shadow-orange-500/30">
+          <AlertTriangle class="w-3.5 h-3.5" />
+          <span class="text-[10px] uppercase tracking-wider font-bold">Warning</span>
+        </div>
+        <div v-else-if="status === 'normal'" class="flex items-center space-x-1 text-[var(--color-accent-blue)] bg-[var(--color-accent-blue)]/10 px-2.5 py-1 rounded-md border border-[var(--color-accent-blue)]/20">
+          <div class="w-1.5 h-1.5 rounded-full bg-[var(--color-accent-blue)]"></div>
+          <span class="text-[10px] uppercase tracking-wider font-bold">Normal</span>
+        </div>
       </div>
     </div>
     
