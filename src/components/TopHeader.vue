@@ -4,12 +4,15 @@ import { Search, Bell, Menu, CheckCircle2, AlertTriangle, Sun, Moon } from 'luci
 import { useMQTT } from '../composables/useMQTT'
 import { useTheme } from '../composables/useTheme'
 import { useLanguage } from '../composables/useLanguage'
+import { useAuth } from '../composables/useAuth'
 import LanguageDropdown from './LanguageDropdown.vue'
+import { User } from 'lucide-vue-next'
 
 const emit = defineEmits(['toggle-sidebar'])
 const { notifications, unreadCount, clearNotifications, resetUnreadCount } = useMQTT()
 const { isDarkMode, toggleTheme } = useTheme()
 const { t } = useLanguage()
+const { user } = useAuth()
 
 const currentDateTime = ref('')
 const isDropdownOpen = ref(false)
@@ -92,6 +95,16 @@ onUnmounted(() => {
       <!-- Date/Time -->
       <div class="hidden md:block text-content-secondary text-sm font-medium bg-base-secondary px-4 py-2 rounded-lg border border-border-soft shadow-sm">
         {{ currentDateTime }}
+      </div>
+
+      <!-- User Info -->
+      <div v-if="user" class="hidden sm:flex items-center space-x-2 bg-base-secondary px-3 py-1.5 rounded-xl border border-border-soft">
+        <div class="w-7 h-7 rounded-full bg-[var(--color-accent-blue)]/20 flex items-center justify-center">
+          <User class="w-4 h-4 text-[var(--color-accent-blue)]" />
+        </div>
+        <span class="text-xs font-semibold text-content-primary truncate max-w-[120px]">
+          {{ user.email }}
+        </span>
       </div>
       
       <!-- Notification Bell -->

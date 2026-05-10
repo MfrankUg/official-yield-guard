@@ -6,6 +6,7 @@ import AIAssistant from '../views/AIAssistant.vue'
 import WarehouseMap from '../views/WarehouseMap.vue'
 import History from '../views/History.vue'
 import Settings from '../views/Settings.vue'
+import { supabase } from '../lib/supabase'
 
 const routes = [
   {
@@ -26,33 +27,54 @@ const routes = [
   {
     path: '/dashboard',
     name: 'Dashboard',
-    component: Dashboard
+    component: Dashboard,
+    meta: { requiresAuth: true }
   },
   {
     path: '/ai-assistant',
     name: 'AIAssistant',
-    component: AIAssistant
+    component: AIAssistant,
+    meta: { requiresAuth: true }
   },
   {
     path: '/map',
     name: 'WarehouseMap',
-    component: WarehouseMap
+    component: WarehouseMap,
+    meta: { requiresAuth: true }
   },
   {
     path: '/history',
     name: 'History',
-    component: History
+    component: History,
+    meta: { requiresAuth: true }
   },
   {
     path: '/settings',
     name: 'Settings',
-    component: Settings
+    component: Settings,
+    meta: { requiresAuth: true }
   }
 ]
 
 const router = createRouter({
   history: createWebHistory(),
   routes
+})
+
+// Authentication Guard
+router.beforeEach(async (to, from, next) => {
+  const { data: { session } } = await supabase.auth.getSession()
+  const isAuthenticated = !!session
+
+  if (to.meta.requiresAuth && !isAuthenticated) {
+    // If route requires auth and user is not logged in, redirect to login
+    next('/login')
+  } else if ((to.path === '/login' || to.path === '/signup') && isAuthenticated) {
+    // If user is already logged in and tries to go to login/signup, redirect to dashboard
+    next('/dashboard')
+  } else {
+    next()
+  }
 })
 
 export default router

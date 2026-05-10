@@ -7,6 +7,7 @@ import AIChatInterface from './components/AIChatInterface.vue'
 import ActionNotification from './components/ActionNotification.vue'
 import { useMQTT } from './composables/useMQTT'
 import { useTheme } from './composables/useTheme'
+import { useAuth } from './composables/useAuth'
 
 const { 
   isConnected, 
@@ -15,6 +16,7 @@ const {
 } = useMQTT()
 
 const { initTheme } = useTheme()
+const { user, loading: authLoading } = useAuth()
 
 const route = useRoute()
 const router = useRouter()
@@ -22,6 +24,7 @@ const router = useRouter()
 const isGlobalLoading = ref(false)
 
 const isPublicRoute = computed(() => ['/', '/login', '/signup'].includes(route.path))
+const showShell = computed(() => !isPublicRoute.value && user.value)
 
 // Show loading effect when navigating to the Dashboard shell
 router.beforeEach((to, from, next) => {
@@ -41,7 +44,17 @@ const toggleSidebar = () => {
 
 onMounted(() => {
   initTheme()
-  connect()
+  if (user.value) connect()
+})
+
+// Watch for user changes to connect/disconnect MQTT
+import { watch } from 'vue'
+watch(user, (newUser) => {
+  if (newUser) {
+    connect()
+  } else {
+    disconnect()
+  }
 })
 
 onUnmounted(() => {
@@ -51,47 +64,30 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <!-- Global Loading Overlay -->
-  <transition name="fade-overlay">
-    <div v-if="isGlobalLoading" class="fixed inset-0 z-[9999] bg-[var(--color-accent-blue)] flex flex-col items-center justify-center">
-      <div class="bg-white p-4 rounded-3xl shadow-2xl mb-8 animate-pulse">
-        <img src="./assets/logo.png" class="w-20 h-20 object-contain" alt="Yield Guard Logo" />
-      </div>
-      <div class="w-64 h-1.5 bg-white/20 rounded-full overflow-hidden relative">
-        <div class="absolute top-0 left-0 h-full bg-white rounded-full animate-loader-bar"></div>
-      </div>
-      <p class="text-blue-100 mt-6 font-semibold tracking-widest uppercase text-xs">Authenticating & Connecting...</p>
-    </div>
-  </transition>
-
-  <!-- Unified Route Handler -->
-  <div v-if="isPublicRoute" class="min-h-screen bg-white">
-    <router-view v-slot="{ Component }">
-      <transition name="page-slide" mode="out-in">
-        <component :is="Component" :key="route.path" />
-      </transition>
-    </router-view>
-  </div>
-
-  <div v-else class="flex h-[100dvh] bg-base-primary text-content-primary overflow-hidden font-sans relative">
-    <!-- Mobile Sidebar Backdrop -->
-    <div 
-      v-if="isSidebarOpen" 
-      @click="isSidebarOpen = false" 
-      class="fixed inset-0 bg-black/50 z-40 lg:hidden transition-opacity"
-    ></div>
-
-    <!-- Global Action Notifications -->
-    <ActionNotification />
-
-    <Sidebar :isOpen="isSidebarOpen" @close="isSidebarOpen = false" />
+  <!-- Main App Container -->
+  <div class="min-h-screen bg-base-primary text-content-primary font-sans relative overflow-hidden flex h-[100dvh]">
     
-    <main class="flex-1 flex flex-col h-full overflow-hidden relative min-w-0">
-      <TopHeader @toggle-sidebar="toggleSidebar" />
-      
-      <!-- Connection Status Banner -->
+    <!-- Global Action Notifications (Popups) -->
+    <ActionNotification v-if="!isPublicRoute" />
+
+    <!-- Sidebar: Only show on non-public routes for authenticated users -->
+    <template v-if="showShell">
+      <!-- Mobile Sidebar Backdrop -->
       <div 
-        v-if="!isConnected" 
+        v-if="isSidebarOpen" 
+        @click="isSidebarOpen = false" 
+        class="fixed inset-0 bg-black/50 z-40 lg:hidden transition-opacity"
+      ></div>
+      <Sidebar :isOpen="isSidebarOpen" @close="isSidebarOpen = false" />
+    </template>
+    
+    <main class="flex-1 flex flex-col h-full overflow-hidden relative min-w-0" :class="{'bg-white': isPublicRoute}">
+      <!-- Header: Only show for authenticated users -->
+      <TopHeader v-if="showShell" @toggle-sidebar="toggleSidebar" />
+      
+      <!-- Connection Status Banner: Only show for authenticated users -->
+      <div 
+        v-if="showShell && !isConnected" 
         class="bg-[var(--color-accent-red)]/10 text-[var(--color-accent-red)] px-6 py-2 text-sm font-medium border-b border-[var(--color-accent-red)]/20 flex items-center justify-center shrink-0"
       >
         <span class="w-2 h-2 rounded-full bg-[var(--color-accent-red)] animate-pulse mr-2"></span>
@@ -100,19 +96,20 @@ onUnmounted(() => {
 
       <div 
         class="flex-1 relative"
-        :class="route.path === '/ai-assistant' ? 'p-0 overflow-hidden flex flex-col' : 'p-4 sm:p-8 overflow-y-auto overflow-x-hidden'"
+        :class="[
+          isPublicRoute ? '' : (route.path === '/ai-assistant' ? 'p-0 overflow-hidden flex flex-col' : 'p-4 sm:p-8 overflow-y-auto overflow-x-hidden')
+        ]"
       >
-        <!-- Render current route -->
+        <!-- Main Route View -->
         <router-view v-slot="{ Component }">
-          <transition name="page-slide" mode="out-in">
+          <transition name="page-slide">
             <component :is="Component" :key="route.path" />
           </transition>
         </router-view>
       </div>
       
-      <!-- Floating AI Assistant (Hidden on full AI Assistant page) -->
-      <AIChatInterface v-if="route.path !== '/ai-assistant'" />
-      
+      <!-- Floating AI Assistant: Only on non-public dashboard routes for auth users (except AI page) -->
+      <AIChatInterface v-if="showShell && route.path !== '/ai-assistant'" />
     </main>
   </div>
 </template>

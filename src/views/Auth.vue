@@ -3,10 +3,14 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ArrowLeft, Mail, Lock, User, CheckCircle2 } from 'lucide-vue-next'
 import { useLanguage } from '../composables/useLanguage'
+import { useAuth } from '../composables/useAuth'
 
+const { signUp, signIn } = useAuth()
+const { t } = useLanguage()
+const errorMessage = ref('')
+const successMessage = ref('')
 const router = useRouter()
 const route = useRoute()
-const { t } = useLanguage()
 
 // Determine initial mode from route
 const authMode = ref(route.path === '/signup' ? 'signup' : 'login')
@@ -20,12 +24,24 @@ const isLoading = ref(false)
 
 const handleAuth = async () => {
   isLoading.value = true
-  // Simulate network request
-  setTimeout(() => {
+  errorMessage.value = ''
+  successMessage.value = ''
+  
+  try {
+    if (authMode.value === 'signup') {
+      await signUp(email.value, password.value)
+      successMessage.value = 'Registration successful! Please check your email for confirmation.'
+      // Optionally stay on page or auto-login if email confirm is disabled
+    } else if (authMode.value === 'login') {
+      await signIn(email.value, password.value)
+      router.push('/dashboard')
+    }
+  } catch (error) {
+    console.error('Auth error:', error)
+    errorMessage.value = error.message || 'An error occurred during authentication.'
+  } finally {
     isLoading.value = false
-    // On success, navigate to dashboard which triggers the global loader
-    router.push('/dashboard')
-  }, 800)
+  }
 }
 
 const navigateBack = () => {
@@ -108,6 +124,15 @@ const toggleMode = (mode) => {
           <p class="text-sm text-gray-500 font-medium">
             {{ authMode === 'login' ? t('auth.loginSub') : authMode === 'signup' ? t('auth.signupSub') : t('auth.resetSub') }}
           </p>
+        </div>
+
+        <!-- Error/Success Messages -->
+        <div v-if="errorMessage" class="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm font-medium">
+          {{ errorMessage }}
+        </div>
+        <div v-if="successMessage" class="mb-4 p-3 bg-green-50 border border-green-200 text-green-600 rounded-xl text-sm font-medium flex items-center">
+          <CheckCircle2 class="w-4 h-4 mr-2" />
+          {{ successMessage }}
         </div>
 
         <!-- Forms -->

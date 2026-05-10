@@ -1,8 +1,9 @@
 <script setup>
 import { computed } from 'vue'
-import { Sun, History, MessageSquare, Map, Grid, X } from 'lucide-vue-next'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useLanguage } from '../composables/useLanguage'
+import { useAuth } from '../composables/useAuth'
+import { LogOut } from 'lucide-vue-next'
 
 const props = defineProps({
   isOpen: {
@@ -13,7 +14,18 @@ const props = defineProps({
 
 const emit = defineEmits(['close'])
 const route = useRoute()
+const router = useRouter()
 const { t } = useLanguage()
+const { signOut } = useAuth()
+
+const handleLogout = async () => {
+  try {
+    await signOut()
+    router.push('/')
+  } catch (error) {
+    console.error('Logout error:', error)
+  }
+}
 
 const navItems = computed(() => [
   { label: t('nav.dashboard'), icon: Sun, path: '/dashboard' },
@@ -64,6 +76,15 @@ const navItems = computed(() => [
         <span class="font-medium text-sm">{{ item.label }}</span>
       </router-link>
     </nav>
-    
+    <!-- Footer / Logout -->
+    <div class="p-4 border-t border-border-soft shrink-0">
+      <button 
+        @click="handleLogout"
+        class="w-full flex items-center px-4 py-3 rounded-xl text-content-secondary hover:bg-red-500/10 hover:text-red-500 transition-all duration-200 group"
+      >
+        <LogOut class="w-5 h-5 mr-3 group-hover:scale-110 transition-transform" />
+        <span class="font-medium text-sm">{{ t('auth.logout') || 'Logout' }}</span>
+      </button>
+    </div>
   </aside>
 </template>

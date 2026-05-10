@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import mqtt from 'mqtt'
+import { supabase } from '../lib/supabase'
 
 // Singleton state: moved outside the composable so all components share the exact same reactive refs
 const currentTemperature = ref(null)
@@ -90,10 +91,10 @@ const evaluateActionableInsights = (temp, hum) => {
 export function useMQTT() {
 
   const connect = () => {
-    const brokerUrl = 'wss://392a25b9fbf4427da0a7b361620a2a2a.s1.eu.hivemq.cloud:8884/mqtt'
+    const brokerUrl = import.meta.env.VITE_MQTT_BROKER_URL || 'wss://250787cfd1a441c7bc9a72a0a5190bda.s1.eu.hivemq.cloud:8884/mqtt'
     const options = {
-      username: 'Mfrankug',
-      password: '$Frank1122',
+      username: import.meta.env.VITE_MQTT_USERNAME || 'YieldGuard',
+      password: import.meta.env.VITE_MQTT_PASSWORD || 'Yieldguard@2026',
       clientId: 'yield_guard_web_' + Math.random().toString(16).substr(2, 8),
     }
 
@@ -103,14 +104,16 @@ export function useMQTT() {
       client.on('connect', () => {
         isConnected.value = true
         connectionError.value = null
-        client.subscribe('tdms/warehouse1/environment', (err) => {
+        const topic = import.meta.env.VITE_MQTT_TOPIC || 'yield/warehousezone1/environment'
+        client.subscribe(topic, (err) => {
           if (err) console.error('Subscription error:', err)
         })
       })
 
       client.on('message', (topic, message) => {
         try {
-          if (topic === 'tdms/warehouse1/environment') {
+          const envTopic = import.meta.env.VITE_MQTT_TOPIC || 'yield/warehousezone1/environment'
+          if (topic === envTopic) {
             const parsedData = JSON.parse(message.toString())
             if (parsedData.temperature !== undefined) {
               currentTemperature.value = parsedData.temperature
@@ -152,9 +155,10 @@ export function useMQTT() {
               }
             }
             
-            // Only update history if we have valid values
+            // Only update history and DB if we have valid values
             if (parsedData.temperature !== undefined && parsedData.humidity !== undefined) {
               updateHistory(parsedData.temperature, parsedData.humidity)
+              saveToDatabase(parsedData)
               evaluateActionableInsights(parsedData.temperature, parsedData.humidity)
             }
           }
@@ -197,6 +201,30 @@ export function useMQTT() {
       if (historicalDataPoints.value.length > 72) {
         historicalDataPoints.value.shift()
       }
+    }
+  }
+
+  // Save reading to Supabase
+  let lastDbSaveTime = 0
+  const saveToDatabase = async (data) => {
+    const now = Date.now()
+    if (now - lastDbSaveTime < 60000) return // Throttled to once per minute
+
+    lastDbSaveTime = now
+    try {
+      const { error } = await supabase
+        .from('sensor_readings')
+        .insert([{
+          temperature: data.temperature,
+          humidity: data.humidity,
+          heat_index: data.heatIndex,
+          status: data.status || 'Optimal',
+          warehouse_zone: 'warehousezone1'
+        }])
+      
+      if (error) console.error('Error saving to Supabase:', error)
+    } catch (err) {
+      console.error('Failed to save sensor data:', err)
     }
   }
 
