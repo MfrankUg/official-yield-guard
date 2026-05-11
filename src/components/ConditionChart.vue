@@ -127,18 +127,7 @@ const options = {
 </script>
 
 <template>
-  <div class="bg-base-secondary rounded-2xl border border-border-soft p-6 shadow-sm h-full flex flex-col">
-    <div class="flex items-center justify-between mb-4">
-      <h3 class="text-content-primary font-semibold">{{ t('chart.title') }}</h3>
-      <div class="flex items-center space-x-2">
-        <span class="w-3 h-3 rounded-full bg-[var(--color-accent-blue)]"></span>
-        <span class="text-xs text-content-secondary">{{ t('chart.temp') }}</span>
-        <span class="w-3 h-3 rounded-full bg-[var(--color-accent-red)] ml-3"></span>
-        <span class="text-xs text-content-secondary">{{ t('chart.humidity') }}</span>
-      </div>
-    </div>
-    <div class="flex-1 relative">
-      <Line :data="chartData" :options="options" />
-    </div>
+  <div class="h-full w-full relative">
+    <Line :data="chartData" :options="options" />
   </div>
 </template>

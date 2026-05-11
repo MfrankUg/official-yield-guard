@@ -7,12 +7,14 @@ import { useMQTT } from '../composables/useMQTT'
 import { useExport } from '../composables/useExport'
 import { useLanguage } from '../composables/useLanguage'
 
+const mqttStore = useMQTT()
 const { 
   currentTemperature, 
   currentHumidity, 
   historicalDataPoints,
-  isConnected
-} = useMQTT()
+  isConnected,
+  isSystemActive
+} = mqttStore
 
 const { downloadCSV, downloadPDF } = useExport()
 const { t } = useLanguage()
@@ -97,8 +99,8 @@ const humStatus = computed(() => {
             {{ t('dash.liveSensors') }}
             <span 
               class="w-2.5 h-2.5 rounded-full ml-3 shadow-sm"
-              :class="isConnected ? 'bg-green-500 animate-pulse' : 'bg-[var(--color-accent-red)]'"
-              :title="isConnected ? t('dash.systemLive') : t('dash.systemOffline')"
+              :class="isSystemActive ? 'bg-green-500 animate-pulse' : 'bg-[var(--color-accent-red)]'"
+              :title="isSystemActive ? t('dash.systemLive') : t('dash.systemOffline')"
             ></span>
           </h2>
           

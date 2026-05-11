@@ -37,6 +37,9 @@ const translations = {
     'auth.google': 'Sign in with Google',
     'auth.apple': 'Sign in with Apple',
     'auth.logout': 'Logout',
+    'logout.confirm': 'Are you sure you want to sign out?',
+    'logout.cancel': 'Cancel',
+    'logout.signout': 'Sign Out',
     // Landing
     'landing.features': 'Features',
     'landing.founders': 'Founders',
@@ -219,6 +222,9 @@ const translations = {
     'auth.google': 'Yingira ne Google',
     'auth.apple': 'Yingira ne Apple',
     'auth.logout': 'Fuluma',
+    'logout.confirm': 'Oli mukakafu nti oyagala okufuluma?',
+    'logout.cancel': 'Sazamu',
+    'logout.signout': 'Fuluma',
     // Landing
     'landing.features': 'Ebirimu',
     'landing.founders': 'Abaatandikawo',
@@ -401,6 +407,9 @@ const translations = {
     'auth.google': 'Ingia na Google',
     'auth.apple': 'Ingia na Apple',
     'auth.logout': 'Ondoka',
+    'logout.confirm': 'Je, una uhakika unataka kuondoka?',
+    'logout.cancel': 'Ghairi',
+    'logout.signout': 'Ondoka',
     // Landing
     'landing.features': 'Vipengele',
     'landing.founders': 'Waanzilishi',

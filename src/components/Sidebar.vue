@@ -4,6 +4,8 @@ import { useRoute, useRouter } from 'vue-router'
 import { useLanguage } from '../composables/useLanguage'
 import { useAuth } from '../composables/useAuth'
 import { LogOut, X as CloseIcon, Sun, History, MessageSquare, Map, LayoutGrid } from 'lucide-vue-next'
+import LogoutModal from './LogoutModal.vue'
+import { ref } from 'vue'
 
 const props = defineProps({
   isOpen: {
@@ -18,7 +20,14 @@ const router = useRouter()
 const { t } = useLanguage()
 const { signOut } = useAuth()
 
-const handleLogout = async () => {
+const showLogoutModal = ref(false)
+
+const handleLogoutAttempt = () => {
+  showLogoutModal.value = true
+}
+
+const confirmLogout = async () => {
+  showLogoutModal.value = false
   try {
     await signOut()
     router.push('/')
@@ -79,7 +88,7 @@ const navItems = computed(() => [
     <!-- Footer / Logout -->
     <div class="p-4 border-t border-border-soft shrink-0">
       <button 
-        @click="handleLogout"
+        @click="handleLogoutAttempt"
         class="w-full flex items-center px-4 py-3 rounded-xl text-content-secondary hover:bg-red-500/10 hover:text-red-500 transition-all duration-200 group"
       >
         <LogOut class="w-5 h-5 mr-3 group-hover:scale-110 transition-transform" />
@@ -87,4 +96,11 @@ const navItems = computed(() => [
       </button>
     </div>
   </aside>
+
+  <!-- Logout Confirmation -->
+  <LogoutModal 
+    :show="showLogoutModal" 
+    @close="showLogoutModal = false" 
+    @confirm="confirmLogout" 
+  />
 </template>

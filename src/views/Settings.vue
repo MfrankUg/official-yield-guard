@@ -1,9 +1,9 @@
 <script setup>
 import { ref } from 'vue'
-import { Settings as SettingsIcon, Save, Bell, Sliders, Cpu, Globe } from 'lucide-vue-next'
+import { Settings as SettingsIcon, Save, Bell, Sliders, Cpu } from 'lucide-vue-next'
 import { useLanguage } from '../composables/useLanguage'
 
-const { currentLanguage, languages, t } = useLanguage()
+const { t } = useLanguage()
 
 const thresholds = ref({
   maxTemp: 25.0,
@@ -131,27 +131,6 @@ const saveSettings = () => {
     </div>
 
 
-
-    <!-- Language Settings -->
-    <div class="bg-base-secondary rounded-2xl border border-border-soft shadow-sm overflow-hidden">
-      <div class="p-6 border-b border-border-soft flex items-center bg-base-primary/30">
-        <Globe class="w-5 h-5 text-content-secondary mr-3" />
-        <h3 class="text-lg font-bold text-content-primary">{{ t('settings.langPrefs') }}</h3>
-      </div>
-      <div class="p-6">
-        <div class="flex items-center justify-between">
-          <div>
-            <h4 class="text-sm font-medium text-content-primary">{{ t('settings.dashLang') }}</h4>
-            <p class="text-xs text-content-secondary mt-1">{{ t('settings.dashLangSub') }}</p>
-          </div>
-          <select v-model="currentLanguage" class="bg-base-primary border border-border-soft rounded-xl px-4 py-2 text-sm font-semibold text-content-primary focus:outline-none focus:border-[var(--color-accent-blue)] transition-colors cursor-pointer min-w-[120px]">
-            <option v-for="lang in languages" :key="lang.code" :value="lang.code">
-              {{ lang.name }} ({{ lang.short }})
-            </option>
-          </select>
-        </div>
-      </div>
-    </div>
 
     <!-- Mobile Save Button -->
     <button 

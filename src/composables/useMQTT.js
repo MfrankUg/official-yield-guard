@@ -7,7 +7,9 @@ const currentTemperature = ref(null)
 const currentHumidity = ref(null)
 const currentHeatIndex = ref(null)
 const isConnected = ref(false)
+const isSystemActive = ref(false)
 const connectionError = ref(null)
+let watchdogTimer = null
 
 const historicalDataPoints = ref([])
 const notifications = ref([])
@@ -155,6 +157,13 @@ export function useMQTT() {
               }
             }
             
+            // Handle System Active State & Watchdog
+            isSystemActive.value = true
+            if (watchdogTimer) clearTimeout(watchdogTimer)
+            watchdogTimer = setTimeout(() => {
+              isSystemActive.value = false
+            }, 30000) // 30 seconds timeout if no data received
+
             // Only update history and DB if we have valid values
             if (parsedData.temperature !== undefined && parsedData.humidity !== undefined) {
               updateHistory(parsedData.temperature, parsedData.humidity)
@@ -171,6 +180,7 @@ export function useMQTT() {
         console.error('MQTT Connection Error: ', err)
         connectionError.value = err.message || 'Connection failed'
         isConnected.value = false
+        isSystemActive.value = false
       })
       
       client.on('close', () => {
@@ -179,6 +189,7 @@ export function useMQTT() {
 
       client.on('offline', () => {
         isConnected.value = false
+        isSystemActive.value = false
       })
 
     } catch (err) {
@@ -250,6 +261,7 @@ export function useMQTT() {
     currentHeatIndex,
     historicalDataPoints,
     isConnected,
+    isSystemActive,
     connectionError,
     notifications,
     unreadCount,

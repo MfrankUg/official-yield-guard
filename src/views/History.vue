@@ -1,6 +1,6 @@
 <script setup>
-import { computed, ref, onMounted } from 'vue'
-import { Activity, Clock, AlertTriangle, CheckCircle2, Download, FileText, Database, Loader2 } from 'lucide-vue-next'
+import { computed, ref, onMounted, watch } from 'vue'
+import { Activity, Download, FileText, Database, AlertTriangle, CheckCircle2, Clock, Calendar, Loader2 } from 'lucide-vue-next'
 import { useMQTT } from '../composables/useMQTT'
 import { useExport } from '../composables/useExport'
 import { useLanguage } from '../composables/useLanguage'
@@ -10,38 +10,86 @@ import ConditionChart from '../components/ConditionChart.vue'
 const { historicalDataPoints, notifications } = useMQTT()
 const { downloadCSV, downloadPDF } = useExport()
 const { t } = useLanguage()
-const { fetchData, loading: dbLoading } = useDatabase()
+const { fetchData } = useDatabase()
 
 const dbReadings = ref([])
 const isFetching = ref(false)
+const selectedRange = ref('7d')
 
-onMounted(async () => {
+const ranges = [
+  { label: '1 Week', value: '7d' },
+  { label: '1 Month', value: '30d' },
+  { label: '1 Year', value: '1y' }
+]
+
+const loadHistoricalData = async () => {
   isFetching.value = true
   try {
+    // Determine the start date based on range
+    const now = new Date()
+    let startDate = new Date()
+    if (selectedRange.value === '7d') startDate.setDate(now.getDate() - 7)
+    else if (selectedRange.value === '30d') startDate.setDate(now.getDate() - 30)
+    else if (selectedRange.value === '1y') startDate.setFullYear(now.getFullYear() - 1)
+
+    // Note: In a real app we'd pass this to Supabase .gte('created_at', startDate.toISOString())
+    // For now, we'll fetch and simulate the slice
     const data = await fetchData('sensor_readings', 'temperature, humidity, created_at, status')
     if (data) {
-      // Format data for the chart
-      dbReadings.value = data.map(r => ({
-        timestamp: new Date(r.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        temp: r.temperature,
-        humidity: r.humidity
-      })).reverse().slice(-72) // Get last 72 records in correct order
+      dbReadings.value = data
+        .filter(r => new Date(r.created_at) >= startDate)
+        .map(r => ({
+          timestamp: new Date(r.created_at).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit' }),
+          temp: r.temperature,
+          humidity: r.humidity
+        }))
+        .reverse()
     }
   } finally {
     isFetching.value = false
   }
+}
+
+onMounted(() => {
+  loadHistoricalData()
 })
 
-// Combine database history with real-time updates
-const combinedHistory = computed(() => {
-  // If we have real-time data, it should follow the DB history
-  const liveData = historicalDataPoints.value
-  
-  // Basic merge: start with DB readings, append live data if it's newer
-  // For simplicity in this UI, we'll just show the DB readings if live is empty, 
-  // or prefer live if it's active.
-  return liveData.length > 0 ? liveData : dbReadings.value
+watch(selectedRange, () => {
+  loadHistoricalData()
 })
+
+const combinedHistory = computed(() => {
+  return dbReadings.value.length > 0 ? dbReadings.value : historicalDataPoints.value
+})
+
+const chartData = computed(() => {
+  return {
+    labels: combinedHistory.value.map(dp => dp.timestamp),
+    datasets: [
+      {
+        label: 'Temperature (°C)',
+        data: combinedHistory.value.map(dp => dp.temp),
+        borderColor: '#3b82f6',
+        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+        tension: 0.4,
+        fill: true,
+        pointRadius: selectedRange.value === '1y' ? 0 : 2,
+        borderWidth: 2
+      },
+      {
+        label: 'Humidity (%)',
+        data: combinedHistory.value.map(dp => dp.humidity),
+        borderColor: '#ef4444',
+        backgroundColor: 'transparent',
+        tension: 0.4,
+        pointRadius: selectedRange.value === '1y' ? 0 : 2,
+        borderWidth: 2
+      }
+    ]
+  }
+})
+
+
 
 const exportTimeframeEnv = ref('1day')
 const exportTimeframeLogs = ref('1day')
@@ -106,36 +154,7 @@ const handleLogsExport = (format) => {
   isLogsMenuOpen.value = false
 }
 
-const chartData = computed(() => {
-  return {
-    labels: combinedHistory.value.map(dp => dp.timestamp),
-    datasets: [
-      {
-        label: 'Temperature',
-        data: combinedHistory.value.map(dp => dp.temp),
-        borderColor: '#3b82f6',
-        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-        yAxisID: 'y',
-        tension: 0.4,
-        fill: true,
-        pointRadius: 0,
-        pointHoverRadius: 4,
-        borderWidth: 2
-      },
-      {
-        label: 'Humidity',
-        data: combinedHistory.value.map(dp => dp.humidity),
-        borderColor: '#ef4444',
-        backgroundColor: 'transparent',
-        yAxisID: 'y1',
-        tension: 0.4,
-        pointRadius: 0,
-        pointHoverRadius: 4,
-        borderWidth: 2
-      }
-    ]
-  }
-})
+
 
 </script>
 
@@ -270,19 +289,48 @@ const chartData = computed(() => {
       </div>
     </div>
 
-    <!-- Main Chart -->
-    <div class="bg-base-secondary rounded-2xl border border-border-soft p-6 shadow-sm">
-      <div class="flex items-center justify-between mb-6">
-        <h3 class="text-lg font-bold text-content-primary">{{ t('history.conditionTrends') }}</h3>
-        <div class="px-3 py-1 bg-base-primary rounded-lg border border-border-soft text-xs text-content-secondary font-medium flex items-center">
-          <Clock class="w-3 h-3 mr-1.5" />
-          {{ t('history.liveUpdating') }}
+    <!-- Professional Performance Analytics Chart -->
+    <div class="bg-base-secondary rounded-2xl border border-border-soft p-6 lg:p-10 shadow-sm relative overflow-hidden">
+      <!-- Background subtle gradient decoration -->
+      <div class="absolute top-0 right-0 w-64 h-64 bg-[var(--color-accent-blue)]/5 blur-[100px] rounded-full -mr-32 -mt-32 pointer-events-none"></div>
+
+      <div class="flex flex-col xl:flex-row xl:items-center justify-between mb-10 gap-6">
+        <div>
+          <div class="flex items-center space-x-2 text-[var(--color-accent-blue)] mb-2">
+            <Activity class="w-4 h-4" />
+            <span class="text-[10px] font-bold uppercase tracking-widest">Advanced Monitoring</span>
+          </div>
+          <h3 class="text-2xl font-bold text-content-primary tracking-tight">Environmental Performance Analytics</h3>
+          <p class="text-sm text-content-secondary mt-1 max-w-xl">
+            Statistical breakdown of warehouse climate stability. Monitor critical deviations and historical trends across your chosen lifecycle interval.
+          </p>
+        </div>
+        
+        <div class="flex flex-wrap items-center gap-3 p-1.5 bg-base-primary rounded-2xl border border-border-soft self-start shadow-inner">
+          <button 
+            v-for="range in ranges" 
+            :key="range.value"
+            @click="selectedRange = range.value"
+            class="px-5 py-2 rounded-xl text-xs font-bold transition-all duration-300"
+            :class="selectedRange === range.value ? 'bg-[var(--color-accent-blue)] text-white shadow-lg shadow-blue-500/20 scale-105' : 'text-content-secondary hover:text-content-primary hover:bg-base-secondary'"
+          >
+            {{ range.label }}
+          </button>
         </div>
       </div>
-      <div class="h-[400px] w-full relative">
-        <div v-if="isFetching" class="absolute inset-0 flex items-center justify-center bg-base-secondary/50 z-10 rounded-xl">
-          <Loader2 class="w-8 h-8 text-[var(--color-accent-blue)] animate-spin" />
+
+      <div class="h-[500px] w-full relative">
+        <div v-if="isFetching" class="absolute inset-0 flex items-center justify-center bg-base-secondary/60 z-30 backdrop-blur-md rounded-2xl">
+          <div class="flex flex-col items-center">
+            <div class="relative w-16 h-16 mb-4">
+               <div class="absolute inset-0 border-4 border-[var(--color-accent-blue)]/20 rounded-full"></div>
+               <div class="absolute inset-0 border-4 border-[var(--color-accent-blue)] rounded-full border-t-transparent animate-spin"></div>
+            </div>
+            <span class="text-sm font-bold text-content-primary tracking-wide">Syncing Data Lake...</span>
+            <span class="text-xs text-content-secondary mt-1">Retrieving historical warehouse metrics</span>
+          </div>
         </div>
+        
         <ConditionChart :chartData="chartData" />
       </div>
     </div>

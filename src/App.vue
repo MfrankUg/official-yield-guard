@@ -5,6 +5,7 @@ import Sidebar from './components/Sidebar.vue'
 import TopHeader from './components/TopHeader.vue'
 import AIChatInterface from './components/AIChatInterface.vue'
 import ActionNotification from './components/ActionNotification.vue'
+import GlobalLoader from './components/GlobalLoader.vue'
 import { useMQTT } from './composables/useMQTT'
 import { useTheme } from './composables/useTheme'
 import { useAuth } from './composables/useAuth'
@@ -112,6 +113,9 @@ onUnmounted(() => {
       <!-- Floating AI Assistant: Only on non-public dashboard routes for auth users (except AI page) -->
       <AIChatInterface v-if="showShell && route.path !== '/ai-assistant'" />
     </main>
+
+    <!-- Global Fullscreen Loader -->
+    <GlobalLoader :show="isGlobalLoading" />
   </div>
 </template>
 
