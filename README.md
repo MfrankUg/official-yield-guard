@@ -124,7 +124,7 @@ Yield Guard handles agricultural data with care. AI interactions are processed t
 
 **Frank Muhindo**
 - GitHub: [@MfrankUg](https://github.com/MfrankUg)
-- Role: Lead Developer & Designer
+- Role: Developer & Designer
 
 ---
 

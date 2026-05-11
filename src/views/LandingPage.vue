@@ -37,7 +37,12 @@ const founders = [
 ]
 
 const scrollToTop = () => {
-  window.scrollTo({ top: 0, behavior: 'smooth' })
+  const container = document.getElementById('main-content-area')
+  if (container) {
+    container.scrollTo({ top: 0, behavior: 'smooth' })
+  } else {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 }
 
 let observer = null
@@ -68,7 +73,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-white text-gray-900 font-sans selection:bg-blue-100 selection:text-blue-900 overflow-x-hidden w-full">
+  <div class="min-h-full bg-white text-gray-900 font-sans selection:bg-blue-100 selection:text-blue-900 w-full">
     
     <!-- Navbar -->
     <nav class="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b border-gray-100">

@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useLanguage } from '../composables/useLanguage'
 import { useAuth } from '../composables/useAuth'
-import { LogOut } from 'lucide-vue-next'
+import { LogOut, X as CloseIcon, Sun, History, MessageSquare, Map, LayoutGrid } from 'lucide-vue-next'
 
 const props = defineProps({
   isOpen: {
@@ -32,7 +32,7 @@ const navItems = computed(() => [
   { label: t('nav.history'), icon: History, path: '/history' },
   { label: t('nav.assistant'), icon: MessageSquare, path: '/ai-assistant' },
   { label: t('nav.map'), icon: Map, path: '/map' },
-  { label: t('nav.settings'), icon: Grid, path: '/settings' }
+  { label: t('nav.settings'), icon: LayoutGrid, path: '/settings' }
 ])
 </script>
 
@@ -50,7 +50,7 @@ const navItems = computed(() => [
         <span class="text-content-primary font-bold text-xl tracking-wide">Yield Guard</span>
       </div>
       <button @click="emit('close')" class="lg:hidden p-1 text-content-secondary hover:text-content-primary transition-colors">
-        <X class="w-5 h-5" />
+        <CloseIcon class="w-5 h-5" />
       </button>
     </div>
 

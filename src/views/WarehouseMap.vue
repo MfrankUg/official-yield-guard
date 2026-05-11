@@ -11,9 +11,9 @@ const { t } = useLanguage()
 const selectedZone = ref('zone-a')
 
 const zones = computed(() => [
-  { id: 'zone-a', name: t('map.zoneA'), color: 'border-[var(--color-accent-blue)]' },
-  { id: 'zone-b', name: t('map.zoneB'), color: 'border-green-500' },
-  { id: 'zone-c', name: t('map.zoneC'), color: 'border-[var(--color-accent-red)]' }
+  { id: 'zone-a', name: t('map.zoneA.name'), color: 'border-[var(--color-accent-blue)]' },
+  { id: 'zone-b', name: t('map.zoneB.name'), color: 'border-green-500' },
+  { id: 'zone-c', name: t('map.zoneC.name'), color: 'border-[var(--color-accent-red)]' }
 ])
 
 const activeZoneData = computed(() => {
@@ -100,7 +100,7 @@ const getZoneClass = (zoneId) => {
               </div>
               <Box class="w-8 h-8 mb-3 opacity-80" :class="selectedZone === 'zone-a' ? 'text-[var(--color-accent-blue)]' : 'text-content-secondary'" />
               <span class="font-bold text-lg text-content-primary tracking-wide">ZONE A</span>
-              <span class="text-sm text-content-secondary mt-1">{{ t('map.zoneA').replace('Zone A: ', '') }}</span>
+              <span class="text-sm text-content-secondary mt-1">{{ t('map.zoneA.sub') }}</span>
             </div>
             
             <!-- Zone B -->
@@ -110,7 +110,7 @@ const getZoneClass = (zoneId) => {
             >
               <Box class="w-8 h-8 mb-3 opacity-80" :class="selectedZone === 'zone-b' ? 'text-green-500' : 'text-content-secondary'" />
               <span class="font-bold text-lg text-content-primary tracking-wide">ZONE B</span>
-              <span class="text-sm text-content-secondary mt-1">{{ t('map.zoneB').replace('Zone B: ', '').replace('Kanda B: ', '').replace('Ekitundu B: ', '') }}</span>
+              <span class="text-sm text-content-secondary mt-1">{{ t('map.zoneB.sub') }}</span>
             </div>
 
             <!-- Zone C -->
@@ -120,7 +120,7 @@ const getZoneClass = (zoneId) => {
             >
               <Box class="w-8 h-8 mb-3 opacity-80" :class="selectedZone === 'zone-c' ? 'text-[var(--color-accent-red)]' : 'text-content-secondary'" />
               <span class="font-bold text-lg text-content-primary tracking-wide">ZONE C</span>
-              <span class="text-sm text-content-secondary mt-1 text-center">{{ t('map.zoneC').replace('Zone C: ', '').replace('Kanda C: ', '').replace('Ekitundu C: ', '') }}</span>
+              <span class="text-sm text-content-secondary mt-1 text-center">{{ t('map.zoneC.sub') }}</span>
             </div>
           </div>
         </div>

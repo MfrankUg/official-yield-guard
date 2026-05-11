@@ -95,9 +95,10 @@ onUnmounted(() => {
       </div>
 
       <div 
+        id="main-content-area"
         class="flex-1 relative"
         :class="[
-          isPublicRoute ? '' : (route.path === '/ai-assistant' ? 'p-0 overflow-hidden flex flex-col' : 'p-4 sm:p-8 overflow-y-auto overflow-x-hidden')
+          isPublicRoute ? 'overflow-y-auto overflow-x-hidden p-0' : (route.path === '/ai-assistant' ? 'p-0 overflow-hidden flex flex-col' : 'p-4 sm:p-8 overflow-y-auto overflow-x-hidden pb-24 sm:pb-32')
         ]"
       >
         <!-- Main Route View -->

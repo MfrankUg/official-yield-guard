@@ -57,7 +57,7 @@ const toggleMode = (mode) => {
 </script>
 
 <template>
-  <div class="flex h-screen w-full bg-white overflow-hidden font-sans">
+  <div class="flex min-h-full w-full bg-white font-sans">
     
     <!-- Left Side: Visual Branding (Hidden on Mobile) -->
     <div class="hidden lg:flex w-1/2 relative flex-col justify-between overflow-hidden bg-black">
@@ -99,7 +99,7 @@ const toggleMode = (mode) => {
     </div>
 
     <!-- Right Side: Auth Form Container -->
-    <div class="w-full lg:w-1/2 flex flex-col items-center justify-center p-6 sm:p-12 relative bg-white lg:rounded-tl-[3rem] shadow-[-20px_0_40px_-15px_rgba(0,0,0,0.1)] z-10 overflow-y-auto h-full min-h-screen lg:min-h-0">
+    <div class="w-full lg:w-1/2 flex flex-col items-center justify-center p-6 sm:p-12 relative bg-white lg:rounded-tl-[3rem] shadow-[-20px_0_40px_-15px_rgba(0,0,0,0.1)] z-10">
       
       <!-- Mobile Back Button -->
       <div class="w-full max-w-[420px] flex justify-start mb-6 lg:hidden mt-4">

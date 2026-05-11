@@ -76,7 +76,7 @@ const percentage = computed(() => {
     </div>
     
     <div class="mb-6 flex items-baseline">
-      <span class="text-4xl font-bold text-content-primary tracking-tight">{{ value !== null && value !== undefined ? value.toFixed(1) : '--' }}</span>
+      <span class="text-4xl font-bold text-content-primary tracking-tight">{{ typeof value === 'number' ? value.toFixed(1) : '--' }}</span>
       <span class="text-xl text-content-secondary ml-1 font-medium">{{ unit }}</span>
     </div>
 
