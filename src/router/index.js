@@ -77,6 +77,9 @@ router.beforeEach(async (to, from, next) => {
   if (to.meta.requiresAuth && !isAuthenticated) {
     // If route requires auth and user is not logged in, redirect to login
     next('/login')
+  } else if (to.path === '/' && isRecovery) {
+    // If user lands on root with a recovery token, send them to login
+    next('/login?recovery=true')
   } else if ((to.path === '/login' || to.path === '/signup') && isAuthenticated && !isRecovery) {
     // If user is already logged in and tries to go to login/signup, redirect to dashboard
     // BUT allow them to stay if it's a password recovery session
