@@ -1,24 +1,49 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ArrowLeft, Mail, Lock, User, CheckCircle2 } from 'lucide-vue-next'
 import { useLanguage } from '../composables/useLanguage'
 import { useAuth } from '../composables/useAuth'
 
-const { signUp, signIn } = useAuth()
+const { signUp, signIn, resetPasswordForEmail, updatePassword, authEvent } = useAuth()
 const { t } = useLanguage()
 const errorMessage = ref('')
 const successMessage = ref('')
 const router = useRouter()
 const route = useRoute()
 
-// Determine initial mode from route
-const authMode = ref(route.path === '/signup' ? 'signup' : 'login')
+// Determine initial mode from route or URL hash
+const authMode = ref('login')
+
+onMounted(() => {
+  // Check for password recovery mode from Supabase redirect
+  if (
+    window.location.hash.includes('type=recovery') || 
+    route.query.type === 'recovery' || 
+    route.query.recovery === 'true' ||
+    authEvent.value === 'PASSWORD_RECOVERY'
+  ) {
+    authMode.value = 'reset'
+  } else if (route.path === '/signup') {
+    authMode.value = 'signup'
+  } else {
+    authMode.value = 'login'
+  }
+})
+
+// Listen for auth event changes (in case they happen after mount)
+watch(authEvent, (event) => {
+  if (event === 'PASSWORD_RECOVERY') {
+    authMode.value = 'reset'
+  }
+})
 
 // Form states
 const email = ref('')
 const password = ref('')
 const name = ref('')
+
+const confirmPassword = ref('')
 
 const isLoading = ref(false)
 
@@ -29,12 +54,31 @@ const handleAuth = async () => {
   
   try {
     if (authMode.value === 'signup') {
+      if (password.value !== confirmPassword.value) {
+        throw new Error('Passwords do not match')
+      }
       await signUp(email.value, password.value)
       successMessage.value = 'Registration successful! Please check your email for confirmation.'
-      // Optionally stay on page or auto-login if email confirm is disabled
     } else if (authMode.value === 'login') {
       await signIn(email.value, password.value)
       router.push('/dashboard')
+    } else if (authMode.value === 'forgot') {
+      await resetPasswordForEmail(email.value)
+      successMessage.value = 'Password reset link sent! Please check your email.'
+    } else if (authMode.value === 'reset') {
+      if (!password.value || !confirmPassword.value) {
+        throw new Error('Please fill in all fields')
+      }
+      if (password.value !== confirmPassword.value) {
+        throw new Error('Passwords do not match')
+      }
+      await updatePassword(password.value)
+      successMessage.value = 'Password updated successfully! Redirecting to login...'
+      setTimeout(() => {
+        authMode.value = 'login'
+        password.value = ''
+        confirmPassword.value = ''
+      }, 3000)
     }
   } catch (error) {
     console.error('Auth error:', error)
@@ -50,7 +94,6 @@ const navigateBack = () => {
 
 const toggleMode = (mode) => {
   authMode.value = mode
-  // Optionally update URL without reloading
   if (mode === 'login' && route.path !== '/login') router.replace('/login')
   if (mode === 'signup' && route.path !== '/signup') router.replace('/signup')
 }
@@ -119,10 +162,20 @@ const toggleMode = (mode) => {
         <!-- Titles -->
         <div class="text-center mb-8">
           <h1 class="text-3xl font-bold text-gray-900 mb-2">
-            {{ authMode === 'login' ? t('auth.loginTitle') : authMode === 'signup' ? t('auth.signupTitle') : t('auth.resetTitle') }}
+            {{ 
+              authMode === 'login' ? t('auth.loginTitle') : 
+              authMode === 'signup' ? t('auth.signupTitle') : 
+              authMode === 'reset' ? t('auth.updateTitle') :
+              t('auth.resetTitle') 
+            }}
           </h1>
           <p class="text-sm text-gray-500 font-medium">
-            {{ authMode === 'login' ? t('auth.loginSub') : authMode === 'signup' ? t('auth.signupSub') : t('auth.resetSub') }}
+            {{ 
+              authMode === 'login' ? t('auth.loginSub') : 
+              authMode === 'signup' ? t('auth.signupSub') : 
+              authMode === 'reset' ? t('auth.updateSub') :
+              t('auth.resetSub') 
+            }}
           </p>
         </div>
 
@@ -150,20 +203,22 @@ const toggleMode = (mode) => {
           </div>
 
           <!-- Email -->
-          <div>
+          <div v-if="authMode !== 'reset'">
             <label class="block text-sm font-semibold text-gray-700 mb-1.5">{{ t('auth.email') }}</label>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                 <Mail class="h-5 w-5 text-gray-400" />
               </div>
-              <input v-model="email" type="email" required placeholder="you@company.com" class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all sm:text-sm" />
+              <input v-model="email" type="email" :required="authMode !== 'reset'" placeholder="you@company.com" class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all sm:text-sm" />
             </div>
           </div>
 
-          <!-- Password (Login & Sign Up) -->
+          <!-- Password (Login & Sign Up & Reset) -->
           <div v-if="authMode !== 'forgot'">
             <div class="flex items-center justify-between mb-1.5">
-              <label class="block text-sm font-semibold text-gray-700">{{ t('auth.password') }}</label>
+              <label class="block text-sm font-semibold text-gray-700">
+                {{ authMode === 'reset' ? 'New Password' : t('auth.password') }}
+              </label>
               <button v-if="authMode === 'login'" type="button" @click="toggleMode('forgot')" class="text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors">
                 {{ t('auth.forgot') }}
               </button>
@@ -176,11 +231,29 @@ const toggleMode = (mode) => {
             </div>
           </div>
 
+          <!-- Confirm Password (Sign Up & Reset Only) -->
+          <div v-if="authMode === 'signup' || authMode === 'reset'">
+            <label class="block text-sm font-semibold text-gray-700 mb-1.5">
+              {{ authMode === 'reset' ? 'Confirm New Password' : 'Confirm Password' }}
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                <Lock class="h-5 w-5 text-gray-400" />
+              </div>
+              <input v-model="confirmPassword" type="password" required placeholder="••••••••" class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all sm:text-sm" />
+            </div>
+          </div>
+
           <!-- Primary Button -->
           <button type="submit" :disabled="isLoading" class="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 transition-colors disabled:opacity-70 disabled:cursor-not-allowed mt-2">
             <svg v-if="isLoading" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
             <span v-else>
-              {{ authMode === 'login' ? t('auth.btnLogin') : authMode === 'signup' ? t('auth.btnSignup') : t('auth.btnReset') }}
+              {{ 
+                authMode === 'login' ? t('auth.btnLogin') : 
+                authMode === 'signup' ? t('auth.btnSignup') : 
+                authMode === 'reset' ? 'Update Password' : 
+                t('auth.btnReset') 
+              }}
             </span>
           </button>
         </form>
