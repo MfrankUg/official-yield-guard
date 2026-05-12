@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useLanguage } from '../composables/useLanguage'
 import { useAuth } from '../composables/useAuth'
-import { LogOut, X as CloseIcon, Sun, History, MessageSquare, Map, LayoutGrid } from 'lucide-vue-next'
+import { LogOut, X as CloseIcon, Sun, History, MessageSquare, Map, LayoutGrid, User } from 'lucide-vue-next'
 import LogoutModal from './LogoutModal.vue'
 import { ref } from 'vue'
 
@@ -41,6 +41,7 @@ const navItems = computed(() => [
   { label: t('nav.history'), icon: History, path: '/history' },
   { label: t('nav.assistant'), icon: MessageSquare, path: '/ai-assistant' },
   { label: t('nav.map'), icon: Map, path: '/map' },
+  { label: 'Profile', icon: User, path: '/profile' },
   { label: t('nav.settings'), icon: LayoutGrid, path: '/settings' }
 ])
 </script>

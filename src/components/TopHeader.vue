@@ -98,14 +98,18 @@ onUnmounted(() => {
       </div>
 
       <!-- User Info -->
-      <div v-if="user" class="hidden sm:flex items-center space-x-2 bg-base-secondary px-3 py-1.5 rounded-xl border border-border-soft">
+      <router-link 
+        v-if="user" 
+        to="/profile"
+        class="flex items-center space-x-2 bg-base-secondary px-2 sm:px-3 py-1.5 rounded-xl border border-border-soft hover:border-[var(--color-accent-blue)]/50 transition-colors cursor-pointer group"
+      >
         <div class="w-7 h-7 rounded-full bg-[var(--color-accent-blue)]/20 flex items-center justify-center">
           <User class="w-4 h-4 text-[var(--color-accent-blue)]" />
         </div>
-        <span class="text-xs font-semibold text-content-primary truncate max-w-[120px]">
+        <span class="hidden sm:block text-xs font-semibold text-content-primary truncate max-w-[120px]">
           {{ user.email }}
         </span>
-      </div>
+      </router-link>
       
       <!-- Notification Bell -->
       <div class="relative">

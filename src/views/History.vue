@@ -154,26 +154,10 @@ const handleLogsExport = (format) => {
   isLogsMenuOpen.value = false
 }
 
-
-
 </script>
 
 <template>
   <div class="max-w-7xl mx-auto space-y-6 lg:space-y-8">
-    
-    <!-- Header -->
-    <div class="bg-base-secondary p-6 rounded-2xl border border-border-soft shadow-sm flex items-center justify-between">
-      <div class="flex items-center space-x-4">
-        <div class="w-12 h-12 rounded-full bg-[var(--color-accent-blue)]/20 flex items-center justify-center shrink-0">
-          <Activity class="w-6 h-6 text-[var(--color-accent-blue)]" />
-        </div>
-        <div>
-          <h2 class="text-xl font-bold text-content-primary">{{ t('history.title') }}</h2>
-          <p class="text-sm text-content-secondary">{{ t('history.sub') }}</p>
-        </div>
-      </div>
-    </div>
-
     <!-- Export Center -->
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
       <!-- Environmental Data Export -->
@@ -294,17 +278,8 @@ const handleLogsExport = (format) => {
       <!-- Background subtle gradient decoration -->
       <div class="absolute top-0 right-0 w-64 h-64 bg-[var(--color-accent-blue)]/5 blur-[100px] rounded-full -mr-32 -mt-32 pointer-events-none"></div>
 
-      <div class="flex flex-col xl:flex-row xl:items-center justify-between mb-10 gap-6">
-        <div>
-          <div class="flex items-center space-x-2 text-[var(--color-accent-blue)] mb-2">
-            <Activity class="w-4 h-4" />
-            <span class="text-[10px] font-bold uppercase tracking-widest">Advanced Monitoring</span>
-          </div>
-          <h3 class="text-2xl font-bold text-content-primary tracking-tight">Environmental Performance Analytics</h3>
-          <p class="text-sm text-content-secondary mt-1 max-w-xl">
-            Statistical breakdown of warehouse climate stability. Monitor critical deviations and historical trends across your chosen lifecycle interval.
-          </p>
-        </div>
+      <div class="flex justify-end mb-6">
+
         
         <div class="flex flex-wrap items-center gap-3 p-1.5 bg-base-primary rounded-2xl border border-border-soft self-start shadow-inner">
           <button 

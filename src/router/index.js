@@ -6,6 +6,7 @@ import AIAssistant from '../views/AIAssistant.vue'
 import WarehouseMap from '../views/WarehouseMap.vue'
 import History from '../views/History.vue'
 import Settings from '../views/Settings.vue'
+import Profile from '../views/Profile.vue'
 import { supabase } from '../lib/supabase'
 
 const routes = [
@@ -52,6 +53,12 @@ const routes = [
     path: '/settings',
     name: 'Settings',
     component: Settings,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: Profile,
     meta: { requiresAuth: true }
   }
 ]

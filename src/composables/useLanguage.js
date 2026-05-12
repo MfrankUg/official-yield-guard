@@ -189,6 +189,20 @@ const translations = {
     'ai.listening': 'Listening...',
     // ActionNotification
     'popup.action': 'Action',
+    // Profile
+    'profile.title': 'Your Profile',
+    'profile.subtitle': 'Manage your personal information',
+    'profile.back': 'Back',
+    'profile.email': 'Email Address',
+    'profile.emailSub': 'Email cannot be changed from this profile settings.',
+    'profile.fullName': 'Full Name',
+    'profile.fullNamePlaceholder': 'Enter your full name',
+    'profile.phone': 'Phone Number',
+    'profile.phonePlaceholder': 'Enter phone number',
+    'profile.save': 'Save Profile',
+    'profile.saving': 'Saving Changes...',
+    'profile.success': 'Profile updated successfully!',
+    'profile.error': 'Failed to update profile. Please try again.',
   },
   lg: {
     // Navigation
@@ -376,6 +390,20 @@ const translations = {
     'ai.listening': 'Nkuwuliriza...',
     // ActionNotification
     'popup.action': 'Okolera',
+    // Profile
+    'profile.title': 'Ebikukwatako',
+    'profile.subtitle': 'Labirira ebikukwatako mangu',
+    'profile.back': 'Dda Mabega',
+    'profile.email': 'Ennamba ya Email',
+    'profile.emailSub': 'Email teyinza kukyusibwa okuva wano.',
+    'profile.fullName': 'Amanya Mampuyi',
+    'profile.fullNamePlaceholder': 'Yingiza amanya go',
+    'profile.phone': 'Ennamba y\'Essimu',
+    'profile.phonePlaceholder': 'Yingiza ennamba y\'essimu',
+    'profile.save': 'Tereka Ebikukwatako',
+    'profile.saving': 'Biterekebwa...',
+    'profile.success': 'Ebikukwatako biterekeddwa bulungi!',
+    'profile.error': 'Okutereka kulemye. Gezaako nate.',
   },
   sw: {
     // Navigation
@@ -563,6 +591,20 @@ const translations = {
     'ai.listening': 'Ninakusikiliza...',
     // ActionNotification
     'popup.action': 'Hatua',
+    // Profile
+    'profile.title': 'Wasifu Wako',
+    'profile.subtitle': 'Simamia maelezo yako ya kibinafsi',
+    'profile.back': 'Nyuma',
+    'profile.email': 'Barua Pepe',
+    'profile.emailSub': 'Barua pepe haiwezi kubadilishwa hapa.',
+    'profile.fullName': 'Jina Kamili',
+    'profile.fullNamePlaceholder': 'Ingiza jina lako kamili',
+    'profile.phone': 'Namba ya Simu',
+    'profile.phonePlaceholder': 'Ingiza namba ya simu',
+    'profile.save': 'Hifadhi Wasifu',
+    'profile.saving': 'Inahifadhi...',
+    'profile.success': 'Wasifu umesasishwa kikamilifu!',
+    'profile.error': 'Imeshindwa kusasisha wasifu. Tafadhali jaribu tena.',
   }
 }
 
