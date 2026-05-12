@@ -1,8 +1,8 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useMQTT } from '../composables/useMQTT'
 import { useLanguage } from '../composables/useLanguage'
-import { AlertTriangle, Info } from 'lucide-vue-next'
+import { AlertTriangle, Info, X, CheckCircle2, AlertCircle } from 'lucide-vue-next'
 
 const { activePopup } = useMQTT()
 const { t } = useLanguage()
@@ -10,6 +10,44 @@ const { t } = useLanguage()
 const closePopup = () => {
   activePopup.value = null
 }
+
+const styles = computed(() => {
+  if (!activePopup.value) return {}
+  const s = activePopup.value.severity
+  if (s === 'danger') {
+    return {
+      bg: 'bg-red-50 dark:bg-red-950/20',
+      border: 'border-red-500',
+      icon: 'text-red-500',
+      title: 'Error',
+      iconComponent: AlertCircle
+    }
+  } else if (s === 'warning') {
+    return {
+      bg: 'bg-orange-50 dark:bg-orange-950/20',
+      border: 'border-orange-500',
+      icon: 'text-orange-500',
+      title: 'Warning',
+      iconComponent: AlertTriangle
+    }
+  } else if (s === 'success') {
+    return {
+      bg: 'bg-green-50 dark:bg-green-950/20',
+      border: 'border-green-500',
+      icon: 'text-green-500',
+      title: 'Success',
+      iconComponent: CheckCircle2
+    }
+  } else {
+    return {
+      bg: 'bg-blue-50 dark:bg-blue-950/20',
+      border: 'border-blue-500',
+      icon: 'text-blue-500',
+      title: 'Info',
+      iconComponent: Info
+    }
+  }
+})
 
 const startX = ref(0)
 const currentX = ref(0)
@@ -30,17 +68,14 @@ const onTouchEnd = () => {
   if (!isDragging.value) return
   isDragging.value = false
   
-  // If swiped more than 80px left or right, dismiss it
   if (Math.abs(currentX.value) > 80) {
     const direction = currentX.value > 0 ? window.innerWidth : -window.innerWidth
     currentX.value = direction
     setTimeout(() => {
       closePopup()
-      // Reset translation after it is closed so the next popup starts fresh
       setTimeout(() => { currentX.value = 0 }, 300)
-    }, 150) // wait for it to fly off screen
+    }, 150)
   } else {
-    // Snap back to center
     currentX.value = 0
   }
 }
@@ -48,21 +83,22 @@ const onTouchEnd = () => {
 
 <template>
   <transition
-    enter-active-class="transition duration-500 ease-out"
-    enter-from-class="transform -translate-y-full opacity-0"
-    enter-to-class="transform translate-y-0 opacity-100"
-    leave-active-class="transition duration-400 ease-in"
-    leave-from-class="transform translate-y-0 opacity-100"
-    leave-to-class="transform -translate-y-full opacity-0"
+    enter-active-class="transition duration-500 cubic-bezier(0.34, 1.56, 0.64, 1)"
+    enter-from-class="transform -translate-y-full opacity-0 scale-95"
+    enter-to-class="transform translate-y-0 opacity-100 scale-100"
+    leave-active-class="transition duration-300 ease-in"
+    leave-from-class="transform translate-y-0 opacity-100 scale-100"
+    leave-to-class="transform -translate-y-full opacity-0 scale-95"
   >
     <div 
       v-if="activePopup" 
-      class="fixed top-4 left-0 right-0 z-[200] flex justify-center pointer-events-none px-4"
+      class="fixed top-6 left-0 right-0 z-[200] flex justify-center pointer-events-none px-4"
     >
       <div 
-        class="pointer-events-auto w-full max-w-lg md:max-w-2xl bg-base-secondary rounded-2xl shadow-2xl border-2 flex overflow-hidden relative cursor-grab active:cursor-grabbing"
+        class="pointer-events-auto w-full max-w-md bg-white dark:bg-zinc-900 rounded-xl shadow-2xl border-b-[5px] flex items-start p-4 relative cursor-grab active:cursor-grabbing group overflow-hidden"
         :class="[
-          activePopup.severity === 'danger' ? 'border-[var(--color-accent-red)]' : 'border-orange-500',
+          styles.bg,
+          styles.border,
           !isDragging ? 'transition-all duration-300' : ''
         ]"
         :style="currentX ? { transform: `translateX(${currentX}px)`, opacity: 1 - Math.abs(currentX)/300 } : {}"
@@ -74,31 +110,37 @@ const onTouchEnd = () => {
         @mouseup="onTouchEnd"
         @mouseleave="onTouchEnd"
       >
-        <!-- Icon Side -->
-        <div 
-          class="w-12 sm:w-16 flex items-center justify-center shrink-0"
-          :class="activePopup.severity === 'danger' ? 'bg-[var(--color-accent-red)] text-white' : 'bg-orange-500 text-white'"
-        >
-          <AlertTriangle v-if="activePopup.severity === 'danger'" class="w-6 h-6 sm:w-8 sm:h-8 animate-pulse" />
-          <AlertTriangle v-else class="w-6 h-6 sm:w-8 sm:h-8" />
+        <!-- Icon -->
+        <div class="mr-4 mt-0.5 shrink-0">
+          <component :is="styles.iconComponent" class="w-6 h-6" :class="styles.icon" />
         </div>
 
-        <!-- Content Side -->
-        <div class="p-3 sm:p-4 flex-1">
-          <div class="flex justify-between items-start">
-            <h3 
-              class="font-bold text-sm sm:text-base leading-tight mb-1"
-              :class="activePopup.severity === 'danger' ? 'text-[var(--color-accent-red)]' : 'text-orange-600 dark:text-orange-500'"
-            >
-              {{ activePopup.message }}
-            </h3>
-          </div>
-          <p class="text-xs sm:text-sm text-content-primary font-medium flex items-center mt-1">
-            <Info class="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 text-content-secondary" />
-            {{ t('popup.action') }}: {{ activePopup.action }}
+        <!-- Content -->
+        <div class="flex-1 pr-6">
+          <h4 class="font-bold text-sm text-zinc-900 dark:text-white leading-tight">
+            {{ styles.title }}
+          </h4>
+          <p class="text-xs text-zinc-600 dark:text-zinc-400 mt-1 font-medium leading-relaxed">
+            {{ activePopup.message }}
           </p>
+          <div v-if="activePopup.action" class="mt-2 flex items-center text-[10px] font-bold uppercase tracking-wider text-zinc-500">
+            <span class="mr-1.5 opacity-50">Suggestion:</span>
+            <span class="text-zinc-700 dark:text-zinc-300">{{ activePopup.action }}</span>
+          </div>
         </div>
+
+        <!-- Close Button -->
+        <button 
+          @click="closePopup"
+          class="absolute top-3 right-3 p-1 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+        >
+          <X class="w-4 h-4" />
+        </button>
+
+        <!-- Swipe Indicator (Only visible on mobile) -->
+        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-black/10 dark:bg-white/10 rounded-full mb-1 sm:hidden"></div>
       </div>
     </div>
   </transition>
 </template>
+
